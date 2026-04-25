@@ -1,0 +1,2558 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Femboy Clicker ✦</title>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Cinzel+Decorative:wght@700&family=Rajdhani:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --pink: #e8527a;
+      --pink-light: #f7c5d4;
+      --pink-dark: #b03059;
+      --pink-glow: rgba(232,82,122,0.35);
+      --bg: #080610;
+      --bg2: #0d0b15;
+      --surface: rgba(18,14,28,0.94);
+      --surface2: rgba(26,20,40,0.97);
+      --border: #2a2240;
+      --border-glow: rgba(232,82,122,0.25);
+      --text: #f2ecff;
+      --muted: #7a6e9a;
+      --gold: #f0c060;
+      --gold-glow: rgba(240,192,96,0.35);
+      --gem-common: #60c0f0;
+      --gem-rare: #a060f0;
+      --gem-epic: #f060a0;
+
+      --shadow-3d: 0 8px 32px rgba(0,0,0,0.7), 0 2px 8px rgba(0,0,0,0.5);
+      --shadow-card: 0 4px 20px rgba(0,0,0,0.6), 0 1px 4px rgba(0,0,0,0.4);
+      --inset-shadow: inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.3);
+    }
+
+    /* ── Scrollbars ── */
+    ::-webkit-scrollbar { width: 5px; }
+    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+    body {
+      background-color: var(--bg);
+      background-image:
+        radial-gradient(ellipse 80% 50% at 50% -10%, rgba(232,82,122,0.12) 0%, transparent 60%),
+        radial-gradient(ellipse 60% 40% at 80% 110%, rgba(100,60,200,0.08) 0%, transparent 60%);
+      background-attachment: fixed;
+      color: var(--text);
+      font-family: 'DM Mono', monospace;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* animated particle bg */
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image: url('https://images.steamusercontent.com/ugc/928177532154311294/633AB42880BDA17A23F6BA5C174D6DED394264DF/?ima=fit&imcolor=%23000000&imh=979&impolicy=Letterbox&imw=1024&letterbox=true');
+      background-size: cover; background-position: center;
+      opacity: 0.04; z-index: 0; pointer-events: none;
+      transition: background-image 0.6s;
+    }
+    body[data-char="felix"]::before  { background-image: url('https://i.ytimg.com/vi/lR3-om8_Mq8/sddefault.jpg'); }
+    body[data-char="nagisa"]::before { background-image: url('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSckztaoaOo-vzlJU1Qfi31_o-WZMv4G-qWEg&s'); }
+    body[data-char="shun"]::before   { background-image: url('https://cdnb.artstation.com/p/assets/images/images/045/261/567/large/artzen-az-shun-final-2-01.jpg?1642318361'); }
+
+    body[data-char="felix"]  { --pink: #7ecfb0; --pink-light: #c0ead8; --pink-dark: #3d9e7a; --pink-glow: rgba(126,207,176,0.35); }
+    body[data-char="nagisa"] { --pink: #6ab0e8; --pink-light: #b8d9f5; --pink-dark: #2e7ec2; --pink-glow: rgba(106,176,232,0.35); }
+    body[data-char="shun"]   { --pink: #9d60d0; --pink-light: #d0a8f0; --pink-dark: #5c2a90; --pink-glow: rgba(157,96,208,0.4); }
+
+    header, #stats-bar, #layout { position: relative; z-index: 1; }
+
+    /* ══ HEADER ══ */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 12px 24px;
+      display: flex; align-items: center; gap: 14px;
+      background: linear-gradient(180deg, rgba(22,16,36,0.98) 0%, rgba(14,10,24,0.96) 100%);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 24px rgba(0,0,0,0.5), 0 1px 0 var(--border-glow);
+    }
+    .header-pip {
+      width: 9px; height: 9px;
+      background: var(--pink);
+      box-shadow: 0 0 10px var(--pink), 0 0 20px var(--pink-glow);
+      clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);
+      animation: pip-pulse 2s ease-in-out infinite;
+    }
+    @keyframes pip-pulse {
+      0%,100% { opacity: 1; box-shadow: 0 0 10px var(--pink), 0 0 20px var(--pink-glow); }
+      50% { opacity: 0.6; box-shadow: 0 0 6px var(--pink); }
+    }
+    header h1 {
+      font-family: 'Cinzel Decorative', serif;
+      font-size: 18px; color: var(--pink);
+      letter-spacing: 0.04em;
+      text-shadow: 0 0 20px var(--pink-glow), 0 0 40px var(--pink-glow);
+    }
+
+    /* ══ STATS BAR 3D ══ */
+    #stats-bar {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      border-bottom: 1px solid var(--border);
+      background: linear-gradient(180deg, rgba(26,20,42,0.99) 0%, rgba(18,14,30,0.99) 100%);
+      backdrop-filter: blur(12px);
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.05);
+    }
+    .stat {
+      padding: 11px 18px;
+      border-right: 1px solid var(--border);
+      position: relative;
+      transition: background 0.15s;
+    }
+    .stat::after {
+      content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 2px;
+      background: var(--pink); opacity: 0; transition: opacity 0.2s;
+    }
+    .stat:hover::after { opacity: 0.5; }
+    .stat:last-child { border-right: none; }
+    .stat-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.14em; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .stat-val { font-size: 22px; font-weight: 500; color: var(--text); margin-top: 1px; text-shadow: 0 0 12px rgba(242,236,255,0.2); }
+    .stat-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+
+    /* ══ LAYOUT ══ */
+    #layout {
+      display: grid; grid-template-columns: 1fr 290px;
+      flex: 1; min-height: 0;
+    }
+
+    /* ══ CENTER ══ */
+    #center {
+      display: flex; flex-direction: column; align-items: center;
+      justify-content: flex-start; padding: 28px 24px; gap: 18px;
+      border-right: 1px solid var(--border);
+      background: rgba(8,6,16,0.3); backdrop-filter: blur(4px);
+    }
+
+    /* ══ CLICK BUTTON - 3D EPIC ══ */
+    #click-wrap {
+      position: relative; width: 240px; height: 240px;
+      cursor: pointer; user-select: none; -webkit-user-select: none;
+      transform-style: preserve-3d;
+      perspective: 600px;
+    }
+    .click-frame {
+      position: absolute; inset: -6px;
+      border: 1px solid var(--border);
+      background: linear-gradient(135deg, rgba(255,255,255,0.06) 0%, transparent 50%, rgba(0,0,0,0.3) 100%);
+      box-shadow:
+        var(--shadow-3d),
+        0 0 0 1px rgba(255,255,255,0.04) inset,
+        0 0 30px var(--pink-glow);
+      transition: box-shadow 0.2s;
+      clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+    }
+    /* corner accents */
+    .click-frame::before, .click-frame::after {
+      content: '';
+      position: absolute;
+    }
+    .click-frame::before {
+      top: -1px; left: -1px; width: 20px; height: 20px;
+      border-top: 2px solid var(--pink); border-left: 2px solid var(--pink);
+      box-shadow: 0 0 8px var(--pink-glow);
+    }
+    .click-frame::after {
+      bottom: -1px; right: -1px; width: 20px; height: 20px;
+      border-bottom: 2px solid var(--pink); border-right: 2px solid var(--pink);
+      box-shadow: 0 0 8px var(--pink-glow);
+    }
+    #click-img {
+      width: 240px; height: 240px; object-fit: cover; display: block;
+      transition: transform 0.08s, filter 0.12s;
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+    #click-wrap:hover .click-frame {
+      box-shadow: var(--shadow-3d), 0 0 0 1px rgba(255,255,255,0.04) inset, 0 0 50px var(--pink-glow), 0 0 80px var(--pink-glow);
+    }
+    #click-wrap:hover #click-img { filter: brightness(1.15) saturate(1.1); }
+    #click-wrap:active #click-img { transform: scale(0.90) rotateX(4deg); filter: brightness(0.85); }
+    #click-wrap:active .click-frame { box-shadow: var(--shadow-3d), 0 0 15px var(--pink-glow); }
+
+    #click-overlay {
+      position: absolute; inset: 0; pointer-events: none; display: flex; align-items: center; justify-content: center;
+    }
+    #click-ring {
+      width: 240px; height: 240px; border: 2px solid var(--pink);
+      position: absolute; opacity: 0; transform: scale(1);
+      clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+    }
+    #click-ring.burst { animation: ring-burst 0.45s ease-out forwards; }
+    @keyframes ring-burst {
+      0% { opacity: 0.9; transform: scale(1); box-shadow: 0 0 20px var(--pink-glow); }
+      100% { opacity: 0; transform: scale(1.5); }
+    }
+
+    /* ── 3D scanline overlay ── */
+    #click-wrap::after {
+      content: '';
+      position: absolute; inset: 0; pointer-events: none; z-index: 2;
+      background: repeating-linear-gradient(0deg, rgba(0,0,0,0.05) 0px, transparent 1px, transparent 3px);
+      opacity: 0.4;
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+
+    /* ══ COMBO ══ */
+    #combo-display { text-align: center; line-height: 1.4; }
+    #combo-num {
+      font-size: 22px; font-weight: 500; color: var(--pink);
+      font-family: 'Rajdhani', sans-serif; letter-spacing: 0.06em;
+      text-shadow: 0 0 15px var(--pink-glow);
+      transition: text-shadow 0.1s;
+    }
+    #combo-bar-wrap {
+      width: 240px; height: 5px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      overflow: hidden;
+      position: relative;
+    }
+    #combo-bar-wrap::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+      animation: shimmer 2s linear infinite;
+    }
+    @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
+    #combo-bar { height: 100%; background: linear-gradient(90deg, var(--pink-dark), var(--pink), var(--pink-light)); width: 0%; transition: width 0.1s linear; box-shadow: 0 0 8px var(--pink-glow); }
+    #combo-hint { font-size: 10px; color: var(--muted); margin-top: 5px; letter-spacing: 0.06em; }
+
+    /* ══ FLOAT NUMBERS ══ */
+    #floats { position: fixed; inset: 0; pointer-events: none; z-index: 9999; overflow: hidden; }
+    .float {
+      position: absolute; font-size: 16px; font-weight: 500;
+      color: var(--pink); font-family: 'Rajdhani', sans-serif;
+      animation: floatUp 0.9s ease-out forwards; white-space: nowrap;
+      text-shadow: 0 0 8px var(--pink-glow);
+      letter-spacing: 0.04em;
+    }
+    .float.big { font-size: 26px; color: var(--gold); text-shadow: 0 0 12px var(--gold-glow); }
+    .float.crit { font-size: 32px; color: var(--gold); text-shadow: 0 0 20px var(--gold-glow); }
+    .float.gem-drop { font-size: 22px; color: #a0e0ff; text-shadow: 0 0 16px rgba(160,224,255,0.6); }
+    @keyframes floatUp {
+      0% { opacity: 1; transform: translateY(0) scale(1); }
+      60% { opacity: 0.9; }
+      100% { opacity: 0; transform: translateY(-90px) scale(0.8); }
+    }
+
+    /* ══ LOG ══ */
+    #log-wrap {
+      width: 240px; max-height: 110px; overflow-y: auto;
+      border: 1px solid var(--border); background: rgba(14,10,24,0.92);
+      box-shadow: var(--shadow-card), inset 0 1px 0 rgba(255,255,255,0.04);
+    }
+    .log-item { font-size: 10px; color: var(--muted); padding: 3px 10px; border-bottom: 1px solid rgba(42,34,64,0.5); }
+    .log-item span { color: var(--pink-light); }
+
+    /* ══ GEM BAR 3D ══ */
+    /* ══ GEM SLOTS (center bar) ══ */
+    #gem-bar {
+      width: 100%; max-width: 400px;
+      display: flex; gap: 10px; align-items: center; justify-content: center;
+      padding: 6px 0;
+    }
+    #gem-bar-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.12em; font-family: 'Rajdhani', sans-serif; font-weight: 700; text-align: center; margin-top: -4px; }
+    .gem-slot {
+      width: 58px; height: 58px;
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(30,22,50,0.98) 0%, rgba(18,14,30,0.98) 100%);
+      position: relative; cursor: pointer;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.12s;
+      flex-shrink: 0;
+      box-shadow: var(--shadow-card), var(--inset-shadow);
+      clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+    }
+    .gem-slot:hover { border-color: var(--pink); transform: translateY(-2px); box-shadow: var(--shadow-3d), 0 0 12px var(--pink-glow); }
+    .gem-slot.gem-filled { border-color: var(--pink); box-shadow: var(--shadow-card), var(--inset-shadow), 0 0 12px var(--pink-glow); }
+    .gem-slot.drop-target { border-color: var(--gold) !important; box-shadow: 0 0 0 2px var(--gold-glow), var(--shadow-3d) !important; animation: slot-pulse 0.5s ease-in-out infinite alternate; }
+    @keyframes slot-pulse {
+      from { box-shadow: 0 0 0 2px var(--gold-glow), var(--shadow-card); }
+      to   { box-shadow: 0 0 0 5px rgba(240,192,96,0.2), var(--shadow-3d); }
+    }
+    .gem-slot-inner {
+      width: 100%; height: 100%; display: flex; align-items: center; justify-content: center;
+      font-size: 9px; color: var(--muted); letter-spacing: 0.08em; text-transform: uppercase; font-family: 'Rajdhani', sans-serif;
+    }
+    .gem-crystal { position: relative; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+    .gem-crystal svg { display: block; }
+
+    /* rarity glow filters */
+    .gem-common  svg { filter: drop-shadow(0 0 3px rgba(180,160,220,0.5)); }
+    .gem-rare    svg { filter: drop-shadow(0 0 5px rgba(120,80,220,0.6)); }
+    .gem-epic    svg { filter: drop-shadow(0 0 6px rgba(240,80,160,0.7)); }
+    .gem-legendary svg { filter: drop-shadow(0 0 8px rgba(240,180,60,0.9)) drop-shadow(0 0 14px rgba(240,180,60,0.5)); }
+
+    /* ══ GEM MANAGER (unified modal) ══ */
+    #gem-manager-backdrop {
+      position: fixed; inset: 0; z-index: 5000;
+      background: rgba(4,2,12,0.82); backdrop-filter: blur(4px);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s;
+    }
+    #gem-manager-backdrop.active { opacity: 1; pointer-events: all; }
+
+    #gem-manager {
+      position: fixed; z-index: 5100;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%) scale(0.94);
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s cubic-bezier(.22,.68,0,1.2);
+      width: min(520px, 96vw);
+      background: linear-gradient(160deg, rgba(20,14,36,0.99) 0%, rgba(10,7,20,0.99) 100%);
+      border: 1px solid var(--border);
+      box-shadow: var(--shadow-3d), 0 0 40px rgba(232,82,122,0.12);
+      clip-path: polygon(12px 0%, calc(100% - 12px) 0%, 100% 12px, 100% calc(100% - 12px), calc(100% - 12px) 100%, 12px 100%, 0% calc(100% - 12px), 0% 12px);
+    }
+    #gem-manager.active { opacity: 1; pointer-events: all; transform: translate(-50%, -50%) scale(1); }
+
+    #gm-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 12px 16px 10px; border-bottom: 1px solid var(--border);
+    }
+    #gm-title { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 13px; color: var(--text); letter-spacing: 0.1em; text-transform: uppercase; }
+    #gm-subtitle { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    #gm-close {
+      background: transparent; border: none; color: var(--muted); font-size: 20px; cursor: pointer;
+      padding: 2px 6px; transition: color 0.12s; font-family: 'DM Mono', monospace; line-height: 1;
+    }
+    #gm-close:hover { color: #fff; }
+
+    /* drop banner for incoming gem */
+    #gm-drop-banner {
+      display: none; align-items: center; gap: 12px;
+      padding: 10px 16px; border-bottom: 1px solid rgba(240,192,96,0.25);
+      background: rgba(240,192,96,0.06);
+    }
+    #gm-drop-banner.visible { display: flex; }
+    #gm-drop-gem-info { flex: 1; }
+    #gm-drop-gem-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 16px; color: var(--gold); }
+    #gm-drop-gem-sub { font-size: 10px; color: var(--muted); margin-top: 1px; }
+    #gm-drop-timer { font-size: 11px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; white-space: nowrap; }
+    #gm-drop-actions { display: flex; gap: 6px; }
+    .gm-drop-btn {
+      padding: 7px 14px; font-size: 11px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      cursor: pointer; border: 1px solid; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: background 0.12s, box-shadow 0.12s; white-space: nowrap;
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .gm-drop-btn.stash  { background: rgba(240,192,96,0.1); border-color: var(--gold); color: var(--gold); }
+    .gm-drop-btn.stash:hover { background: rgba(240,192,96,0.22); box-shadow: 0 0 12px var(--gold-glow); }
+    .gm-drop-btn.dismiss { background: transparent; border-color: var(--border); color: var(--muted); }
+    .gm-drop-btn.dismiss:hover { border-color: var(--muted); color: var(--text); }
+
+    /* tabs inside manager */
+    #gm-tabs { display: flex; border-bottom: 1px solid var(--border); }
+    .gm-tab {
+      flex: 1; padding: 8px 4px; font-size: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      background: transparent; border: none; color: var(--muted); cursor: pointer;
+      letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .gm-tab:hover { color: var(--text); }
+    .gm-tab.active { color: var(--pink); border-bottom-color: var(--pink); }
+
+    /* socket view */
+    #gm-sockets {
+      display: flex; gap: 10px; padding: 14px 16px;
+      align-items: flex-start; justify-content: center;
+    }
+    .gm-socket-card {
+      flex: 1; max-width: 148px;
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(24,18,42,0.99), rgba(14,10,28,0.99));
+      display: flex; flex-direction: column; align-items: center; gap: 8px;
+      padding: 10px 8px 10px;
+      transition: border-color 0.15s, box-shadow 0.15s;
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+    .gm-socket-card.has-gem { border-color: rgba(232,82,122,0.4); }
+    .gm-socket-card.is-drop-target { border-color: var(--gold) !important; box-shadow: 0 0 16px var(--gold-glow) !important; }
+    .gm-socket-num { font-size: 9px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; text-transform: uppercase; letter-spacing: 0.1em; align-self: flex-start; }
+    .gm-socket-gem { width: 56px; height: 56px; display: flex; align-items: center; justify-content: center; }
+    .gm-socket-empty { width: 56px; height: 56px; border: 1px dashed rgba(100,80,140,0.4); display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(120,110,150,0.6); font-family: 'Rajdhani', sans-serif; clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px); }
+    .gm-socket-name { font-size: 11px; font-family: 'Rajdhani', sans-serif; font-weight: 700; color: var(--text); text-align: center; }
+    .gm-socket-desc { font-size: 9px; color: var(--muted); text-align: center; }
+    .gm-socket-rarity { font-size: 8px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; }
+    .gm-socket-actions { display: flex; flex-direction: column; gap: 4px; width: 100%; }
+    .gm-sock-btn {
+      width: 100%; padding: 5px 4px; font-size: 9px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      cursor: pointer; border: 1px solid; letter-spacing: 0.06em; text-transform: uppercase;
+      transition: background 0.12s, box-shadow 0.12s;
+      clip-path: polygon(3px 0%, calc(100% - 3px) 0%, 100% 3px, 100% calc(100% - 3px), calc(100% - 3px) 100%, 3px 100%, 0% calc(100% - 3px), 0% 3px);
+    }
+    .gm-sock-btn.to-stash  { background: rgba(240,192,96,0.07); border-color: rgba(240,192,96,0.4); color: var(--gold); }
+    .gm-sock-btn.to-stash:hover { background: rgba(240,192,96,0.18); box-shadow: 0 0 8px var(--gold-glow); }
+    .gm-sock-btn.to-forge  { background: rgba(160,96,240,0.07); border-color: rgba(160,96,240,0.4); color: #b070f0; }
+    .gm-sock-btn.to-forge:hover { background: rgba(160,96,240,0.18); box-shadow: 0 0 8px rgba(160,96,240,0.3); }
+    .gm-sock-btn.unsocket  { background: rgba(100,80,140,0.07); border-color: rgba(100,80,140,0.3); color: var(--muted); }
+    .gm-sock-btn.unsocket:hover { border-color: var(--muted); color: var(--text); }
+    .gm-sock-btn.socket-drop { background: rgba(232,82,122,0.12); border-color: var(--pink); color: var(--pink); }
+    .gm-sock-btn.socket-drop:hover { background: rgba(232,82,122,0.25); box-shadow: 0 0 10px var(--pink-glow); }
+
+    /* stash view */
+    #gm-stash { padding: 10px 14px 14px; }
+    #gm-stash-empty { font-size: 10px; color: var(--muted); padding: 10px 0; text-align: center; }
+    #gm-stash-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .gm-stash-item {
+      display: flex; flex-direction: column; align-items: center; gap: 4px;
+      width: 66px; padding: 7px 4px 6px;
+      border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(26,18,44,0.99), rgba(14,10,28,0.99));
+      position: relative; cursor: default;
+      transition: border-color 0.12s, transform 0.1s, box-shadow 0.12s;
+      clip-path: polygon(5px 0%, calc(100% - 5px) 0%, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0% calc(100% - 5px), 0% 5px);
+    }
+    .gm-stash-item.common    { border-color: #3d3060; }
+    .gm-stash-item.rare      { border-color: #6030a0; box-shadow: 0 0 5px rgba(96,48,160,0.25); }
+    .gm-stash-item.epic      { border-color: var(--pink-dark); box-shadow: 0 0 7px var(--pink-glow); }
+    .gm-stash-item.legendary { border-color: var(--gold); box-shadow: 0 0 10px var(--gold-glow); }
+    .gm-stash-name { font-size: 8px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; text-align: center; line-height: 1.2; }
+    .gm-stash-count { position: absolute; top: 2px; right: 4px; font-size: 9px; color: var(--gold); font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .gm-stash-actions { display: flex; gap: 3px; width: 100%; margin-top: 2px; }
+    .gm-stash-btn {
+      flex: 1; padding: 4px 2px; font-size: 8px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      cursor: pointer; border: 1px solid; letter-spacing: 0.04em; text-transform: uppercase;
+      transition: background 0.12s; text-align: center;
+      clip-path: polygon(2px 0%, calc(100% - 2px) 0%, 100% 2px, 100% calc(100% - 2px), calc(100% - 2px) 100%, 2px 100%, 0% calc(100% - 2px), 0% 2px);
+    }
+    .gm-stash-btn.sock { background: rgba(232,82,122,0.1); border-color: rgba(232,82,122,0.5); color: var(--pink); }
+    .gm-stash-btn.sock:hover { background: rgba(232,82,122,0.25); }
+    .gm-stash-btn.forge-a { background: rgba(96,200,160,0.08); border-color: rgba(96,200,160,0.4); color: #60c8a0; }
+    .gm-stash-btn.forge-a:hover { background: rgba(96,200,160,0.2); }
+    .gm-stash-btn.forge-b { background: rgba(100,160,240,0.08); border-color: rgba(100,160,240,0.4); color: #64a0f0; }
+    .gm-stash-btn.forge-b:hover { background: rgba(100,160,240,0.2); }
+
+    /* small gem bar slot — no more tooltip, just click to open manager */
+    .gem-slot-hint { position: absolute; bottom: -18px; left: 50%; transform: translateX(-50%); font-size: 8px; color: var(--muted); white-space: nowrap; pointer-events: none; font-family: 'Rajdhani', sans-serif; }
+
+    
+
+    /* ══ FORGE TAB ══ */
+    #forge-slots-row {
+      display: flex; align-items: center; gap: 10px; justify-content: center; padding: 4px 0 8px;
+    }
+    #forge-plus { font-size: 20px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .forge-input-slot {
+      width: 68px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 4px;
+    }
+    .forge-slot-inner {
+      width: 68px; height: 68px; border: 1px solid var(--border);
+      background: linear-gradient(145deg, rgba(30,22,50,0.99), rgba(16,12,28,0.99));
+      display: flex; align-items: center; justify-content: center;
+      font-size: 11px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      transition: border-color 0.15s, box-shadow 0.15s, transform 0.1s;
+      box-shadow: var(--shadow-card), var(--inset-shadow);
+      clip-path: polygon(8px 0%, calc(100% - 8px) 0%, 100% 8px, 100% calc(100% - 8px), calc(100% - 8px) 100%, 8px 100%, 0% calc(100% - 8px), 0% 8px);
+    }
+    .forge-input-slot:hover .forge-slot-inner { border-color: var(--pink); transform: translateY(-2px); box-shadow: var(--shadow-3d), 0 0 14px var(--pink-glow); }
+    .forge-input-slot.filled .forge-slot-inner { border-color: var(--gold); box-shadow: var(--shadow-card), 0 0 10px var(--gold-glow); }
+    .forge-slot-label { font-size: 9px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; }
+
+    #forge-recipe-hint {
+      text-align: center; font-size: 10px; color: var(--muted); min-height: 16px; margin-bottom: 6px;
+      font-family: 'Rajdhani', sans-serif; letter-spacing: 0.06em;
+    }
+    #forge-recipe-hint .recipe-known { color: var(--gold); }
+
+    /* heat meter */
+    #forge-meter-wrap { padding: 2px 0 6px; }
+    #forge-meter-bg {
+      width: 100%; height: 22px; background: rgba(14,10,24,0.97);
+      border: 1px solid var(--border); position: relative; overflow: hidden;
+      box-shadow: var(--inset-shadow);
+    }
+    #forge-meter-fill {
+      height: 100%; width: 0%; position: absolute; top: 0; left: 0;
+      background: linear-gradient(90deg, #30a060, #80e040, #f0c030, #ff4020);
+      transition: width 0.05s linear;
+    }
+    #forge-meter-safe-zone {
+      position: absolute; top: 0; height: 100%;
+      left: 85%; width: 15%; /* 85%–100% */
+      background: rgba(100,255,100,0.12); border-left: 1px solid rgba(100,255,100,0.5);
+      pointer-events: none;
+    }
+    #forge-meter-needle {
+      position: absolute; top: 0; height: 100%; width: 2px;
+      background: white; box-shadow: 0 0 6px white;
+      transition: left 0.05s linear; pointer-events: none; display: none;
+    }
+    #forge-meter-labels {
+      position: absolute; top: 0; left: 0; right: 0; height: 100%;
+      display: flex; justify-content: space-between;
+      font-size: 8px; color: rgba(255,255,255,0.4); padding: 0 2px; align-items: center;
+      pointer-events: none; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    }
+    #forge-meter-pct {
+      text-align: center; font-size: 18px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      color: var(--text); margin-top: 3px;
+      transition: color 0.1s;
+    }
+    #forge-meter-pct.danger { color: #ff4040; text-shadow: 0 0 10px rgba(255,64,64,0.7); }
+    #forge-meter-pct.perfect { color: #60ff80; text-shadow: 0 0 10px rgba(96,255,128,0.7); }
+
+    #forge-heat-legend { font-size: 9px; color: var(--muted); text-align: center; margin-bottom: 8px; font-family: 'Rajdhani', sans-serif; }
+    #forge-btn-row { display: flex; gap: 8px; }
+    #forge-start-btn, #forge-stop-btn {
+      flex: 1; padding: 9px 4px; font-size: 12px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      letter-spacing: 0.1em; text-transform: uppercase; cursor: pointer; border: 1px solid;
+      transition: background 0.12s, box-shadow 0.12s;
+      clip-path: polygon(5px 0%, calc(100% - 5px) 0%, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0% calc(100% - 5px), 0% 5px);
+    }
+    #forge-start-btn { background: rgba(232,82,122,0.12); border-color: var(--pink); color: var(--pink); }
+    #forge-start-btn:hover:not(:disabled) { background: rgba(232,82,122,0.25); box-shadow: 0 0 16px var(--pink-glow); }
+    #forge-start-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    #forge-stop-btn  { background: rgba(96,255,128,0.08); border-color: #60ff80; color: #60ff80; }
+    #forge-stop-btn:hover:not(:disabled) { background: rgba(96,255,128,0.2); box-shadow: 0 0 16px rgba(96,255,128,0.4); }
+    #forge-stop-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+    #forge-result-area {
+      min-height: 40px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; gap: 5px; padding: 6px 0;
+    }
+    .forge-result-gem { display: flex; align-items: center; gap: 10px; padding: 8px 14px; border: 1px solid; }
+    .forge-result-gem.common    { border-color: var(--muted); }
+    .forge-result-gem.rare      { border-color: #a060f0; box-shadow: 0 0 10px rgba(160,96,240,0.3); }
+    .forge-result-gem.epic      { border-color: var(--pink); box-shadow: 0 0 14px var(--pink-glow); }
+    .forge-result-gem.legendary { border-color: var(--gold); box-shadow: 0 0 20px var(--gold-glow); }
+    .forge-result-name { font-family: 'Rajdhani', sans-serif; font-weight: 700; font-size: 14px; }
+    .forge-result-grade { font-size: 10px; color: var(--muted); }
+    .forge-result-btn {
+      margin-top: 4px; padding: 6px 18px; font-size: 11px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      background: transparent; border: 1px solid var(--gold); color: var(--gold); cursor: pointer;
+      letter-spacing: 0.1em; text-transform: uppercase;
+      transition: background 0.12s; width: 100%;
+      clip-path: polygon(5px 0%, calc(100% - 5px) 0%, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0% calc(100% - 5px), 0% 5px);
+    }
+    .forge-result-btn:hover { background: rgba(240,192,96,0.15); }
+
+    /* forge inventory */
+    #forge-inventory { display: flex; flex-wrap: wrap; gap: 6px; padding: 4px 0; }
+    .inv-gem {
+      width: 44px; height: 52px; border: 1px solid var(--border); cursor: pointer; position: relative;
+      background: linear-gradient(145deg, rgba(28,20,46,0.99), rgba(16,12,28,0.99));
+      display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+      transition: border-color 0.12s, transform 0.1s, box-shadow 0.12s;
+      box-shadow: var(--shadow-card);
+      clip-path: polygon(5px 0%, calc(100% - 5px) 0%, 100% 5px, 100% calc(100% - 5px), calc(100% - 5px) 100%, 5px 100%, 0% calc(100% - 5px), 0% 5px);
+    }
+    .inv-gem:hover { transform: translateY(-2px); }
+    .inv-gem.common    { border-color: #504868; }
+    .inv-gem.rare      { border-color: #7040c0; box-shadow: var(--shadow-card), 0 0 6px rgba(112,64,192,0.3); }
+    .inv-gem.epic      { border-color: var(--pink-dark); box-shadow: var(--shadow-card), 0 0 8px var(--pink-glow); }
+    .inv-gem.legendary { border-color: var(--gold); box-shadow: var(--shadow-card), 0 0 12px var(--gold-glow); }
+    .inv-gem.selected-A { outline: 2px solid #60ff80; }
+    .inv-gem.selected-B { outline: 2px solid #60c0ff; }
+    .inv-gem-name { font-size: 7px; color: var(--muted); font-family: 'Rajdhani', sans-serif; font-weight: 700; text-align: center; letter-spacing: 0.04em; }
+    .inv-gem-count {
+      position: absolute; top: 2px; right: 3px; font-size: 8px; color: var(--gold);
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    }
+
+
+    @keyframes crit-flash {
+      0%   { box-shadow: 0 0 0 0 rgba(240,192,96,0.9), 0 0 40px var(--gold-glow); }
+      50%  { box-shadow: 0 0 0 12px rgba(240,192,96,0); }
+      100% { box-shadow: none; }
+    }
+    #click-img.crit { animation: crit-flash 0.4s ease-out forwards; }
+
+    /* ══ SIDEBAR 3D ══ */
+    #sidebar {
+      background: linear-gradient(180deg, rgba(20,15,34,0.99) 0%, rgba(14,10,24,0.99) 100%);
+      backdrop-filter: blur(10px);
+      overflow-y: auto; padding: 14px;
+      display: flex; flex-direction: column; gap: 10px;
+      border-left: 1px solid var(--border);
+    }
+
+    /* character cards 3D */
+    #char-select { display: flex; gap: 6px; flex-wrap: wrap; }
+    .char-card {
+      flex: 1; border: 1px solid var(--border); cursor: pointer;
+      background: linear-gradient(145deg, rgba(28,20,46,0.99) 0%, rgba(18,14,30,0.99) 100%);
+      position: relative; overflow: hidden;
+      transition: border-color 0.15s, transform 0.15s, box-shadow 0.15s;
+      box-shadow: var(--shadow-card), var(--inset-shadow);
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .char-card:hover:not(.locked) { border-color: var(--muted); transform: translateY(-2px); box-shadow: var(--shadow-3d), var(--inset-shadow); }
+    .char-card.active { border-color: var(--pink); box-shadow: var(--shadow-card), var(--inset-shadow), 0 0 16px var(--pink-glow); }
+    .char-card.locked { opacity: 0.5; cursor: not-allowed; }
+    .char-card img { width: 100%; height: 80px; object-fit: cover; object-position: center top; display: block; filter: saturate(0.6); transition: filter 0.15s; }
+    .char-card.active img, .char-card:hover:not(.locked) img { filter: saturate(1.1) brightness(1.05); }
+    .char-card-label { font-size: 9px; color: var(--muted); padding: 4px 6px; text-align: center; text-transform: uppercase; letter-spacing: 0.08em; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .char-card.active .char-card-label { color: var(--pink); }
+    .char-lock-badge {
+      position: absolute; inset: 0; display: flex; align-items: center; justify-content: center;
+      background: rgba(8,6,16,0.7); font-size: 9px; color: var(--muted); text-align: center;
+      padding: 4px; flex-direction: column; gap: 3px;
+    }
+    .char-lock-cost { font-size: 10px; color: var(--gold); font-weight: 500; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+
+    /* tabs */
+    #sidebar-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+    .stab {
+      flex: 1; padding: 8px 4px; font-size: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      background: transparent; border: none; color: var(--muted); cursor: pointer;
+      letter-spacing: 0.08em; text-transform: uppercase; border-bottom: 2px solid transparent;
+      transition: color 0.15s, border-color 0.15s;
+    }
+    .stab:hover { color: var(--text); }
+    .stab.active { color: var(--pink); border-bottom-color: var(--pink); }
+    .tab-panel { display: none; flex-direction: column; gap: 8px; padding-top: 8px; }
+    .tab-panel.active { display: flex; }
+
+    .section-title {
+      font-size: 9px; color: var(--muted); text-transform: uppercase;
+      letter-spacing: 0.12em; padding-bottom: 5px;
+      border-bottom: 1px solid var(--border); margin-top: 2px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    }
+
+    /* upgrade buttons 3D */
+    .upg-btn {
+      background: linear-gradient(145deg, rgba(26,20,42,0.99) 0%, rgba(18,14,30,0.99) 100%);
+      border: 1px solid var(--border);
+      color: var(--text); padding: 10px 12px; cursor: pointer;
+      text-align: left; width: 100%; font-family: 'DM Mono', monospace;
+      transition: border-color 0.12s, background 0.12s, transform 0.1s, box-shadow 0.12s;
+      box-shadow: var(--shadow-card), var(--inset-shadow);
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .upg-btn:hover:not(:disabled) { border-color: var(--muted); transform: translateX(2px); box-shadow: var(--shadow-3d), var(--inset-shadow); }
+    .upg-btn:active:not(:disabled) { transform: translateX(0px) scale(0.98); }
+    .upg-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+    .upg-btn.affordable { border-color: var(--pink); box-shadow: var(--shadow-card), var(--inset-shadow), 0 0 8px var(--pink-glow); }
+    .upg-btn.affordable:hover:not(:disabled) { box-shadow: var(--shadow-3d), var(--inset-shadow), 0 0 16px var(--pink-glow); }
+    .upg-top { display: flex; justify-content: space-between; align-items: center; }
+    .upg-name { font-size: 12px; font-weight: 500; }
+    .upg-owned { font-size: 9px; background: var(--border); color: var(--muted); padding: 2px 6px; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .upg-desc { font-size: 10px; color: var(--muted); margin-top: 2px; }
+    .upg-cost { font-size: 11px; color: var(--pink); margin-top: 4px; font-weight: 500; text-shadow: 0 0 8px var(--pink-glow); }
+
+    /* achievements */
+    .ach-item {
+      display: flex; gap: 10px; align-items: flex-start;
+      border: 1px solid var(--border); padding: 8px 10px;
+      background: linear-gradient(145deg, rgba(24,18,40,0.99) 0%, rgba(16,12,28,0.99) 100%);
+      transition: border-color 0.15s;
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .ach-item.unlocked { border-color: #4a3820; box-shadow: 0 0 10px var(--gold-glow); }
+    .ach-icon {
+      width: 30px; height: 30px; flex-shrink: 0;
+      background: var(--border); display: flex; align-items: center; justify-content: center;
+      font-size: 10px; font-weight: 700; color: var(--muted);
+      font-family: 'Rajdhani', sans-serif;
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .ach-item.unlocked .ach-icon { background: rgba(240,192,96,0.15); color: var(--gold); border: 1px solid rgba(240,192,96,0.3); }
+    .ach-name { font-size: 11px; font-weight: 500; color: var(--muted); }
+    .ach-item.unlocked .ach-name { color: var(--gold); }
+    .ach-desc { font-size: 10px; color: var(--muted); margin-top: 1px; opacity: 0.6; }
+    .ach-item.unlocked .ach-desc { opacity: 1; }
+
+    /* prestige btn */
+    #prestige-btn {
+      background: transparent;
+      border: 1px solid var(--pink-dark);
+      color: var(--pink); padding: 12px; font-size: 12px; font-weight: 700;
+      font-family: 'Rajdhani', sans-serif; cursor: pointer; width: 100%;
+      letter-spacing: 0.08em; text-transform: uppercase;
+      transition: background 0.12s, border-color 0.12s, box-shadow 0.12s;
+      box-shadow: var(--shadow-card);
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+    #prestige-btn:hover:not(:disabled) { background: rgba(232,82,122,0.1); border-color: var(--pink); box-shadow: var(--shadow-card), 0 0 20px var(--pink-glow); }
+    #prestige-btn:disabled { opacity: 0.25; cursor: not-allowed; }
+
+    /* side image card */
+    #side-img-card {
+      width: 100%; border: 1px solid var(--border);
+      overflow: hidden; position: relative; height: 140px; flex-shrink: 0;
+      box-shadow: var(--shadow-card);
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+    #side-img-card img { width: 100%; height: 100%; object-fit: cover; filter: saturate(0.7) brightness(0.75); transition: filter 0.2s; object-position: center top; }
+    #side-img-card:hover img { filter: saturate(1) brightness(0.95); }
+    .side-img-label {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      background: rgba(8,6,16,0.85); font-size: 10px; color: var(--muted);
+      padding: 5px 8px; letter-spacing: 0.1em; text-transform: uppercase;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+    }
+
+    /* stats grid */
+    .stats-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 6px; }
+    .stat-cell {
+      background: linear-gradient(145deg, rgba(24,18,40,0.99) 0%, rgba(16,12,28,0.99) 100%);
+      border: 1px solid var(--border); padding: 8px 10px;
+      box-shadow: var(--shadow-card), var(--inset-shadow);
+      clip-path: polygon(4px 0%, calc(100% - 4px) 0%, 100% 4px, 100% calc(100% - 4px), calc(100% - 4px) 100%, 4px 100%, 0% calc(100% - 4px), 0% 4px);
+    }
+    .stat-cell-label { font-size: 9px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+    .stat-cell-val { font-size: 14px; font-weight: 500; color: var(--text); margin-top: 2px; }
+
+    /* sound + toast */
+    #sound-btn {
+      margin-left: auto; background: transparent; border: 1px solid var(--border);
+      color: var(--muted); padding: 4px 10px; font-size: 10px; font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: border-color 0.12s, color 0.12s;
+    }
+    #sound-btn:hover { border-color: var(--pink); color: var(--text); }
+    #sound-btn.on { color: var(--pink); border-color: var(--pink); }
+
+    #toast {
+      position: fixed; bottom: 28px; left: 50%; transform: translateX(-50%) translateY(70px);
+      background: linear-gradient(145deg, rgba(26,18,44,0.99) 0%, rgba(16,12,28,0.99) 100%);
+      border: 1px solid var(--border);
+      color: var(--text); padding: 10px 22px; font-size: 12px; z-index: 10000;
+      transition: transform 0.3s cubic-bezier(.22,.68,0,1.3), opacity 0.3s; opacity: 0; pointer-events: none; white-space: nowrap;
+      box-shadow: var(--shadow-3d), 0 0 20px var(--pink-glow);
+      font-family: 'Rajdhani', sans-serif; font-weight: 700; letter-spacing: 0.06em;
+      clip-path: polygon(6px 0%, calc(100% - 6px) 0%, 100% 6px, 100% calc(100% - 6px), calc(100% - 6px) 100%, 6px 100%, 0% calc(100% - 6px), 0% 6px);
+    }
+    #toast.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+
+    #char-name-display { font-size: 11px; color: var(--muted); letter-spacing: 0.12em; text-transform: uppercase; font-family: 'Rajdhani', sans-serif; font-weight: 700; }
+
+    @media (max-width: 680px) {
+      #layout { grid-template-columns: 1fr; }
+      #stats-bar { grid-template-columns: repeat(2, 1fr); }
+      #sidebar { border-top: 1px solid var(--border); }
+    }
+    /* header save/load buttons */
+    .hdr-btn {
+      background: transparent; border: 1px solid var(--border);
+      color: var(--muted); padding: 4px 10px; font-size: 10px;
+      font-family: 'Rajdhani', sans-serif; font-weight: 700;
+      cursor: pointer; letter-spacing: 0.08em; text-transform: uppercase;
+      transition: border-color 0.12s, color 0.12s, box-shadow 0.12s;
+      white-space: nowrap;
+    }
+    .hdr-btn:hover { border-color: var(--pink); color: var(--text); box-shadow: 0 0 8px var(--pink-glow); }
+    #save-status {
+      position: fixed; bottom: 60px; left: 50%; transform: translateX(-50%);
+      font-size: 10px; color: var(--muted); font-family: 'Rajdhani', sans-serif;
+      font-weight: 700; letter-spacing: 0.08em; pointer-events: none; z-index: 9999;
+      background: rgba(10,8,20,0.92); border: 1px solid var(--border);
+      padding: 5px 14px; opacity: 0; transition: opacity 0.3s;
+      clip-path: polygon(5px 0%,calc(100% - 5px) 0%,100% 5px,100% calc(100% - 5px),calc(100% - 5px) 100%,5px 100%,0% calc(100% - 5px),0% 5px);
+    }
+    #save-status.show { opacity: 1; }
+
+  </style>
+</head>
+<body data-char="astolfo">
+
+<header>
+  <span class="header-pip"></span>
+  <h1>Femboy Clicker</h1>
+  <button id="sound-btn" class="on hdr-btn" onclick="toggleSound()">SFX ON</button>
+  <button class="hdr-btn" onclick="saveGame()">⬇ Save</button>
+  <button class="hdr-btn" onclick="document.getElementById('load-input').click()">⬆ Load</button>
+  <input type="file" id="load-input" accept=".json" style="display:none" onchange="loadGame(event)">
+</header>
+
+<div id="stats-bar">
+  <div class="stat">
+    <div class="stat-label">Bows</div>
+    <div class="stat-val" id="bows-count">0</div>
+    <div class="stat-sub">collected</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Per click</div>
+    <div class="stat-val" id="per-click">1</div>
+    <div class="stat-sub">base power</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Auto /sec</div>
+    <div class="stat-val" id="passive-val">0</div>
+    <div class="stat-sub">passive</div>
+  </div>
+  <div class="stat">
+    <div class="stat-label">Prestige</div>
+    <div class="stat-val" id="prestige-count">0</div>
+    <div class="stat-sub">x<span id="prestige-mult">1.0</span> bonus</div>
+  </div>
+</div>
+
+<div id="layout">
+  <div id="center">
+    <div id="click-wrap" onclick="handleClick(event)">
+      <div class="click-frame"></div>
+      <img id="click-img"
+           src="https://images.steamusercontent.com/ugc/928177532154311294/633AB42880BDA17A23F6BA5C174D6DED394264DF/?ima=fit&imcolor=%23000000&imh=979&impolicy=Letterbox&imw=1024&letterbox=true"
+           alt="Click" draggable="false" />
+      <div id="click-overlay"><div id="click-ring"></div></div>
+    </div>
+
+    <div id="combo-bar-wrap"><div id="combo-bar"></div></div>
+    <div id="combo-display">
+      <div id="combo-num">x1.0 COMBO</div>
+      <div id="combo-hint">click rapidly to build combo</div>
+    </div>
+    <div id="char-name-display">Astolfo</div>
+
+    <div id="gem-bar">
+      <div class="gem-slot" id="gem-slot-0" onclick="openGemManager()">
+        <div class="gem-slot-inner" id="gem-slot-inner-0">1</div>
+      </div>
+      <div class="gem-slot" id="gem-slot-1" onclick="openGemManager()">
+        <div class="gem-slot-inner" id="gem-slot-inner-1">2</div>
+      </div>
+      <div class="gem-slot" id="gem-slot-2" onclick="openGemManager()">
+        <div class="gem-slot-inner" id="gem-slot-inner-2">3</div>
+      </div>
+    </div>
+    <div id="gem-bar-label">✦ click slots to manage gems ✦</div>
+
+    <div id="log-wrap"><div id="log-entries"></div></div>
+  </div>
+
+  <div id="sidebar">
+    <div id="char-select">
+      <div class="char-card active" id="card-astolfo" onclick="selectChar(0)">
+        <img src="https://images.steamusercontent.com/ugc/928177532154311294/633AB42880BDA17A23F6BA5C174D6DED394264DF/?ima=fit&imcolor=%23000000&imh=979&impolicy=Letterbox&imw=1024&letterbox=true" alt="Astolfo" />
+        <div class="char-card-label">Astolfo</div>
+      </div>
+      <div class="char-card locked" id="card-felix" onclick="selectChar(1)">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJdS3lYRWWropscfxlNabdJzjm31bHW-2cEw&s" alt="Felix" />
+        <div class="char-lock-badge">
+          <span>Locked</span>
+          <span class="char-lock-cost" id="felix-cost-badge">25,000 bows</span>
+        </div>
+        <div class="char-card-label">Felix Argyle</div>
+      </div>
+      <div class="char-card locked" id="card-nagisa" onclick="selectChar(2)">
+        <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX5_I2R0qumS1agpnQ7biEEl2O26EzrPu4OA&s" alt="Nagisa" />
+        <div class="char-lock-badge">
+          <span>Locked</span>
+          <span class="char-lock-cost" id="nagisa-cost-badge">200,000 bows</span>
+        </div>
+        <div class="char-card-label">Nagisa Shiota</div>
+      </div>
+      <div class="char-card locked" id="card-shun" onclick="selectChar(3)">
+        <img src="https://cdnb.artstation.com/p/assets/images/images/045/261/567/large/artzen-az-shun-final-2-01.jpg?1642318361" alt="Shun" />
+        <div class="char-lock-badge">
+          <span>Locked</span>
+          <span class="char-lock-cost" id="shun-cost-badge">500,000 bows</span>
+        </div>
+        <div class="char-card-label">Shun</div>
+      </div>
+    </div>
+
+    <div id="sidebar-tabs">
+      <button class="stab active" onclick="switchTab('upgrades')">Upgrades</button>
+      <button class="stab" onclick="switchTab('achievements')">Medals</button>
+      <button class="stab" onclick="switchTab('forge')">Forge</button>
+      <button class="stab" onclick="switchTab('stats')">Stats</button>
+      <button class="stab" onclick="switchTab('prestige')">Prestige</button>
+    </div>
+
+    <div id="tab-upgrades" class="tab-panel active">
+      <div id="upg-list"></div>
+    </div>
+
+    <div id="tab-achievements" class="tab-panel">
+      <div id="ach-list"></div>
+    </div>
+
+    <div id="tab-forge" class="tab-panel">
+      <div class="section-title">✦ Gem Forge</div>
+      <div id="forge-slots-row">
+        <div class="forge-input-slot" id="forge-slot-A" onclick="forgeSlotClick('A')">
+          <div class="forge-slot-inner" id="forge-inner-A">A</div>
+          <div class="forge-slot-label">Gem A</div>
+        </div>
+        <div id="forge-plus">+</div>
+        <div class="forge-input-slot" id="forge-slot-B" onclick="forgeSlotClick('B')">
+          <div class="forge-slot-inner" id="forge-inner-B">B</div>
+          <div class="forge-slot-label">Gem B</div>
+        </div>
+      </div>
+      <div id="forge-recipe-hint"></div>
+      <!-- The heat meter -->
+      <div id="forge-meter-wrap">
+        <div id="forge-meter-bg">
+          <div id="forge-meter-fill"></div>
+          <div id="forge-meter-safe-zone"></div>
+          <div id="forge-meter-needle"></div>
+          <div id="forge-meter-labels">
+            <span>0%</span><span>50%</span><span style="color:var(--gold)">90%</span><span style="color:#ff4040">100%</span>
+          </div>
+        </div>
+        <div id="forge-meter-pct">0%</div>
+      </div>
+      <div id="forge-heat-legend">
+        <span style="color:#60ff80">▬</span> Perfect zone (85–99%)
+        <span style="color:#ff4040" style="margin-left:8px">▬</span> Overload (&gt;100%)
+      </div>
+      <div id="forge-btn-row">
+        <button id="forge-start-btn" onclick="forgeStart()">▶ Heat</button>
+        <button id="forge-stop-btn" onclick="forgeStop()" disabled>■ Lock In</button>
+      </div>
+      <div id="forge-result-area"></div>
+      <div class="section-title" style="margin-top:8px">Your Gem Inventory</div>
+      <div id="forge-inventory"></div>
+    </div>
+
+    <div id="tab-stats" class="tab-panel">
+      <div class="stats-grid" id="stats-grid"></div>
+    </div>
+
+    <div id="tab-prestige" class="tab-panel">
+      <div id="side-img-card">
+        <img id="side-char-img" src="https://images.steamusercontent.com/ugc/928177532154311294/633AB42880BDA17A23F6BA5C174D6DED394264DF/?ima=fit&imcolor=%23000000&imh=979&impolicy=Letterbox&imw=1024&letterbox=true" alt="" />
+        <div class="side-img-label" id="side-char-label">Astolfo</div>
+      </div>
+      <div class="section-title">Prestige</div>
+      <button id="prestige-btn" disabled onclick="doPrestige()">✦ PRESTIGE (need 10,000) ✦</button>
+    </div>
+  </div>
+</div>
+
+
+<div id="floats"></div>
+<div id="toast"></div>
+<div id="save-status"></div>
+
+<!-- ══ UNIFIED GEM MANAGER ══ -->
+<div id="gem-manager-backdrop" onclick="closeGemManager()"></div>
+<div id="gem-manager">
+  <div id="gm-header">
+    <div>
+      <div id="gm-title">✦ Gem Manager</div>
+      <div id="gm-subtitle">socket, stash, forge — nothing gets lost</div>
+    </div>
+    <button id="gm-close" onclick="closeGemManager()">×</button>
+  </div>
+
+  <!-- Drop banner: shown when a gem has just dropped -->
+  <div id="gm-drop-banner">
+    <div id="gm-drop-crystal"></div>
+    <div id="gm-drop-gem-info">
+      <div id="gm-drop-gem-name"></div>
+      <div id="gm-drop-gem-sub"></div>
+    </div>
+    <div id="gm-drop-timer"></div>
+    <div id="gm-drop-actions">
+      <button class="gm-drop-btn stash" onclick="gmDropToStash()">→ Stash</button>
+      <button class="gm-drop-btn dismiss" onclick="gmDropDismiss()">✕</button>
+    </div>
+  </div>
+
+  <div id="gm-tabs">
+    <button class="gm-tab active" onclick="gmSwitchTab('sockets')">Sockets</button>
+    <button class="gm-tab" onclick="gmSwitchTab('stash')">Stash</button>
+  </div>
+
+  <!-- SOCKETS TAB -->
+  <div id="gm-panel-sockets">
+    <div id="gm-sockets"></div>
+  </div>
+
+  <!-- STASH TAB -->
+  <div id="gm-panel-stash" style="display:none">
+    <div id="gm-stash">
+      <div id="gm-stash-empty" style="display:none">No gems in stash yet. Socket drops or move gems here.</div>
+      <div id="gm-stash-grid"></div>
+    </div>
+  </div>
+
+  <!-- FORGE PICK TAB (hidden unless triggered by forge) -->
+  <div id="gm-panel-forge-pick" style="display:none">
+    <div id="gm-forge-pick-inner" style="padding:12px 14px 14px"></div>
+    <div style="padding:0 14px 14px">
+      <button onclick="forgePickCancel()" style="width:100%;padding:8px;font-size:11px;font-family:'Rajdhani',sans-serif;font-weight:700;letter-spacing:0.08em;text-transform:uppercase;background:transparent;border:1px solid var(--border);color:var(--muted);cursor:pointer;clip-path:polygon(4px 0%,calc(100% - 4px) 0%,100% 4px,100% calc(100% - 4px),calc(100% - 4px) 100%,4px 100%,0% calc(100% - 4px),0% 4px)">✕ Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ══════════════════════════════
+  //  CHARACTERS
+  // ══════════════════════════════
+  const CHARS = [
+    {
+      id: 'astolfo', name: 'Astolfo',
+      img: 'https://images.steamusercontent.com/ugc/928177532154311294/633AB42880BDA17A23F6BA5C174D6DED394264DF/?ima=fit&imcolor=%23000000&imh=979&impolicy=Letterbox&imw=1024&letterbox=true',
+      unlockCost: 0,
+      upgrades: [
+        { id: 'thighhigh', name: 'Thigh highs',  desc: '+1 per click',   baseCost: 15,    type: 'click',   val: 1 },
+        { id: 'ribbon',    name: 'Hair ribbon',   desc: '+2 per click',   baseCost: 80,    type: 'click',   val: 2 },
+        { id: 'skirt',     name: 'Mini skirt',    desc: '+5 per click',   baseCost: 300,   type: 'click',   val: 5 },
+        { id: 'catears',   name: 'Cat ears',      desc: '+1 bow/sec',     baseCost: 50,    type: 'passive', val: 1 },
+        { id: 'tail',      name: 'Fluffy tail',   desc: '+3 bows/sec',    baseCost: 250,   type: 'passive', val: 3 },
+        { id: 'crop',      name: 'Crop top',      desc: '+10 per click',  baseCost: 800,   type: 'click',   val: 10 },
+        { id: 'maid',      name: 'Maid outfit',   desc: '+15 bows/sec',   baseCost: 1200,  type: 'passive', val: 15 },
+        { id: 'glovelace', name: 'Lace gloves',   desc: '+25 per click',  baseCost: 3000,  type: 'click',   val: 25 },
+        { id: 'bunny',     name: 'Bunny suit',    desc: '+50 bows/sec',   baseCost: 6000,  type: 'passive', val: 50 },
+        { id: 'idol',      name: 'Idol stage',    desc: '+100 per click', baseCost: 15000, type: 'click',   val: 100 },
+        { id: 'gamer',     name: 'Gamer chair',   desc: '+200 bows/sec',  baseCost: 30000, type: 'passive', val: 200 },
+      ]
+    },
+    {
+      id: 'felix', name: 'Felix Argyle',
+      img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQJdS3lYRWWropscfxlNabdJzjm31bHW-2cEw&s',
+      unlockCost: 35000,
+      upgrades: [
+        { id: 'f_pawgloves',  name: 'Paw gloves',     desc: '+3 per click',   baseCost: 400,    type: 'click',   val: 3 },
+        { id: 'f_belltail',   name: 'Bell tail',       desc: '+2 per click',   baseCost: 800,    type: 'click',   val: 2 },
+        { id: 'f_catmaid',    name: 'Cat maid dress',  desc: '+8 bows/sec',    baseCost: 2000,   type: 'passive', val: 8 },
+        { id: 'f_healmagic',  name: 'Heal magic',      desc: '+12 per click',  baseCost: 5000,   type: 'click',   val: 12 },
+        { id: 'f_roswaal',    name: 'Roswaal manor',   desc: '+20 bows/sec',   baseCost: 10000,  type: 'passive', val: 20 },
+        { id: 'f_catsenses',  name: 'Cat senses',      desc: '+30 per click',  baseCost: 20000,  type: 'click',   val: 30 },
+        { id: 'f_nyapower',   name: 'Nya power',       desc: '+60 bows/sec',   baseCost: 35000,  type: 'passive', val: 60 },
+        { id: 'f_subaru',     name: 'Subaru fan club', desc: '+80 per click',  baseCost: 60000,  type: 'click',   val: 80 },
+        { id: 'f_emilia',     name: 'Emilia-tan trust',desc: '+150 bows/sec',  baseCost: 100000, type: 'passive', val: 150 },
+        { id: 'f_rezero',     name: 'Re:Zero arc',     desc: '+250 per click', baseCost: 200000, type: 'click',   val: 250 },
+      ]
+    },
+    {
+      id: 'nagisa', name: 'Nagisa Shiota',
+      img: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQX5_I2R0qumS1agpnQ7biEEl2O26EzrPu4OA&s',
+      unlockCost: 200000,
+      upgrades: [
+        { id: 'n_notebook',    name: 'Hit list',          desc: '+5 per click',    baseCost: 1000,   type: 'click',   val: 5 },
+        { id: 'n_tentacle',    name: 'Tentacle dodge',    desc: '+10 bows/sec',    baseCost: 3000,   type: 'passive', val: 10 },
+        { id: 'n_antisensei',  name: 'Anti-Sensei BB',    desc: '+15 per click',   baseCost: 8000,   type: 'click',   val: 15 },
+        { id: 'n_3e_class',    name: '3-E classroom',     desc: '+25 bows/sec',    baseCost: 15000,  type: 'passive', val: 25 },
+        { id: 'n_blueponytail',name: 'Blue ponytail',     desc: '+20 per click',   baseCost: 20000,  type: 'click',   val: 20 },
+        { id: 'n_korosensei',  name: 'Koro-Sensei bond',  desc: '+50 bows/sec',    baseCost: 40000,  type: 'passive', val: 50 },
+        { id: 'n_killing',     name: 'Assassination arts',desc: '+80 per click',   baseCost: 80000,  type: 'click',   val: 80 },
+        { id: 'n_mach20',      name: 'Mach 20 sprint',    desc: '+120 bows/sec',   baseCost: 150000, type: 'passive', val: 120 },
+        { id: 'n_graduation',  name: 'Graduation day',    desc: '+200 per click',  baseCost: 300000, type: 'click',   val: 200 },
+        { id: 'n_endgame',     name: 'March graduation',  desc: '+300 bows/sec',   baseCost: 600000, type: 'passive', val: 300 },
+      ]
+    },
+    {
+      id: 'shun', name: 'Shun',
+      img: 'https://cdnb.artstation.com/p/assets/images/images/045/261/567/large/artzen-az-shun-final-2-01.jpg?1642318361',
+      unlockCost: 500000,
+      upgrades: [
+        { id: 's_choker',      name: 'Spiked choker',     desc: '+8 per click',    baseCost: 5000,    type: 'click',   val: 8 },
+        { id: 's_darkliner',   name: 'Dark eyeliner',     desc: '+12 bows/sec',    baseCost: 12000,   type: 'passive', val: 12 },
+        { id: 's_fishnets',    name: 'Fishnet stockings', desc: '+20 per click',   baseCost: 28000,   type: 'click',   val: 20 },
+        { id: 's_velvetcoat',  name: 'Velvet coat',       desc: '+35 bows/sec',    baseCost: 55000,   type: 'passive', val: 35 },
+        { id: 's_darkribbon',  name: 'Dark bow ribbon',   desc: '+40 per click',   baseCost: 90000,   type: 'click',   val: 40 },
+        { id: 's_cemetery',    name: 'Cemetery stroll',   desc: '+80 bows/sec',    baseCost: 160000,  type: 'passive', val: 80 },
+        { id: 's_bats',        name: 'Bat familiar',      desc: '+100 per click',  baseCost: 280000,  type: 'click',   val: 100 },
+        { id: 's_moonritual',  name: 'Moon ritual',       desc: '+200 bows/sec',   baseCost: 450000,  type: 'passive', val: 200 },
+        { id: 's_darksoul',    name: 'Dark soul pact',    desc: '+350 per click',  baseCost: 750000,  type: 'click',   val: 350 },
+        { id: 's_voidwalker',  name: 'Void walker',       desc: '+500 bows/sec',   baseCost: 1200000, type: 'passive', val: 500 },
+        { id: 's_eternaldark', name: 'Eternal darkness',  desc: '+1000 per click', baseCost: 2500000, type: 'click',   val: 1000 },
+      ]
+    }
+  ];
+
+  // ══════════════════════════════════════════════════════
+  //  GEM TYPES  —  each has a unique SVG shape function
+  //  rarity: common → rare → epic → legendary
+  //  forgeLevel: output level when perfectly forged (0=base)
+  // ══════════════════════════════════════════════════════
+  // shapeFn(color) returns raw SVG inner content (no <svg> wrapper)
+  // Each gem has a distinct silhouette and a unique color palette
+
+  const GEM_SHAPES = {
+    // Classic diamond — 4-point vertical
+    ruby: c => `
+      <polygon points="14,1 26,12 14,27 2,12" fill="${c}" opacity="0.88"/>
+      <polygon points="14,1 26,12 14,10" fill="white" opacity="0.35"/>
+      <polygon points="2,12 14,10 14,1"  fill="white" opacity="0.15"/>
+      <polygon points="14,10 26,12 14,27 2,12" fill="${c}" opacity="0.45"/>`,
+
+    // Oval cabochon
+    sapphire: c => `
+      <ellipse cx="14" cy="14" rx="12" ry="9" fill="${c}" opacity="0.88"/>
+      <ellipse cx="11" cy="10" rx="4"  ry="3" fill="white" opacity="0.3"/>
+      <ellipse cx="14" cy="14" rx="12" ry="9" fill="none" stroke="${c}" stroke-width="1" opacity="0.4"/>`,
+
+    // Hexagon
+    emerald: c => `
+      <polygon points="14,2 24,8 24,20 14,26 4,20 4,8" fill="${c}" opacity="0.86"/>
+      <polygon points="14,2 24,8 14,8"  fill="white" opacity="0.3"/>
+      <polygon points="4,8  14,8 14,2"  fill="white" opacity="0.14"/>
+      <polygon points="14,8 24,8 24,20 14,26 4,20 4,8" fill="${c}" opacity="0.4"/>`,
+
+    // Rounded square / cushion
+    topaz: c => `
+      <rect x="3" y="3" width="22" height="22" rx="5" fill="${c}" opacity="0.86"/>
+      <polygon points="3,3 14,3 3,14" fill="white" opacity="0.25"/>
+      <rect x="3" y="3" width="22" height="22" rx="5" fill="none" stroke="white" stroke-width="0.5" opacity="0.2"/>`,
+
+    // Star / 6-point
+    amethyst: c => `
+      <polygon points="14,1 17,10 26,10 19,16 22,25 14,20 6,25 9,16 2,10 11,10" fill="${c}" opacity="0.88"/>
+      <polygon points="14,1 17,10 14,8 11,10" fill="white" opacity="0.3"/>
+      <polygon points="14,8 17,10 19,16 14,14 9,16 11,10" fill="${c}" opacity="0.45"/>`,
+
+    // Teardrop
+    quartz: c => `
+      <path d="M14,2 C20,6 24,12 24,18 A10,10 0 0,1 4,18 C4,12 8,6 14,2Z" fill="${c}" opacity="0.86"/>
+      <ellipse cx="10" cy="10" rx="3" ry="4" fill="white" opacity="0.28" transform="rotate(-20,10,10)"/>`,
+
+    // Triangle / trilliant
+    opal: c => `
+      <polygon points="14,2 26,24 2,24" fill="${c}" opacity="0.85"/>
+      <polygon points="14,2 20,13 14,10" fill="white" opacity="0.3"/>
+      <polygon points="14,10 20,13 8,13" fill="white" opacity="0.12"/>
+      <polygon points="8,13 20,13 26,24 2,24" fill="${c}" opacity="0.42"/>`,
+
+    // Kite / marquise
+    onyx: c => `
+      <polygon points="14,2 25,14 14,26 3,14" fill="${c}" opacity="0.9"/>
+      <polygon points="14,2 20,10 14,8 8,10" fill="white" opacity="0.22"/>
+      <ellipse cx="14" cy="14" rx="4" ry="6" fill="${c}" opacity="0.5"/>`,
+
+    // Octagon
+    tourmaline: c => `
+      <polygon points="9,2 19,2 26,9 26,19 19,26 9,26 2,19 2,9" fill="${c}" opacity="0.86"/>
+      <polygon points="9,2 19,2 14,7" fill="white" opacity="0.28"/>
+      <polygon points="14,7 19,2 26,9 20,10" fill="white" opacity="0.12"/>
+      <polygon points="14,7 20,10 20,18 14,21 8,18 8,10" fill="${c}" opacity="0.45"/>`,
+
+    // Pear / drop
+    citrine: c => `
+      <path d="M14,3 C19,3 24,9 24,16 A10,9 0 0,1 4,16 C4,9 9,3 14,3Z" fill="${c}" opacity="0.86"/>
+      <circle cx="14" cy="10" r="3" fill="white" opacity="0.3"/>
+      <path d="M14,3 C19,3 24,9 24,16 A10,9 0 0,1 4,16 C4,9 9,3 14,3Z" fill="none" stroke="white" stroke-width="0.5" opacity="0.2"/>`,
+
+    // Shield / shield-cut
+    garnet: c => `
+      <polygon points="14,2 25,8 25,20 14,27 3,20 3,8" fill="${c}" opacity="0.88"/>
+      <polygon points="14,2 25,8 14,8 3,8" fill="white" opacity="0.25"/>
+      <polygon points="14,8 25,8 25,20 14,20" fill="${c}" opacity="0.45"/>
+      <polygon points="14,20 25,20 14,27 3,20" fill="${c}" opacity="0.3"/>`,
+
+    // Crescent / moon
+    moonstone: c => `
+      <path d="M20,14 A10,10 0 1,1 20,14.01 Z" fill="${c}" opacity="0.0"/>
+      <circle cx="14" cy="14" r="11" fill="${c}" opacity="0.85"/>
+      <circle cx="19" cy="14" r="8"  fill="#080610" opacity="0.75"/>
+      <circle cx="10" cy="9"  r="3"  fill="white" opacity="0.22"/>`,
+
+    // Cross / crusader
+    spinel: c => `
+      <rect x="11" y="2"  width="6" height="24" rx="2" fill="${c}" opacity="0.86"/>
+      <rect x="2"  y="11" width="24" height="6"  rx="2" fill="${c}" opacity="0.86"/>
+      <rect x="11" y="2"  width="6" height="24" rx="2" fill="none" stroke="white" stroke-width="0.5" opacity="0.2"/>
+      <circle cx="14" cy="14" r="4" fill="${c}" opacity="0.6"/>
+      <circle cx="14" cy="7"  r="2" fill="white" opacity="0.3"/>`,
+
+    // Arrow / chevron
+    tanzanite: c => `
+      <polygon points="14,2 26,14 20,14 20,26 8,26 8,14 2,14" fill="${c}" opacity="0.87"/>
+      <polygon points="14,2 20,8 14,8 8,8" fill="white" opacity="0.28"/>
+      <polygon points="14,8 20,8 20,14 14,14 8,14 8,8" fill="${c}" opacity="0.45"/>`,
+
+    // Pentagon
+    alexandrite: c => `
+      <polygon points="14,2 25,10 21,23 7,23 3,10" fill="${c}" opacity="0.87"/>
+      <polygon points="14,2 25,10 14,9 3,10" fill="white" opacity="0.26"/>
+      <polygon points="14,9 25,10 21,23 7,23 3,10" fill="${c}" opacity="0.43"/>`,
+
+    // Spiral / rose
+    painite: c => `
+      <circle cx="14" cy="14" r="11" fill="${c}" opacity="0.82"/>
+      <circle cx="14" cy="14" r="7"  fill="${c}" opacity="0.5"/>
+      <circle cx="14" cy="14" r="3"  fill="white" opacity="0.4"/>
+      <line x1="14" y1="3"  x2="14" y2="25" stroke="white" stroke-width="0.5" opacity="0.15"/>
+      <line x1="3"  y1="14" x2="25" y2="14" stroke="white" stroke-width="0.5" opacity="0.15"/>
+      <line x1="6"  y1="6"  x2="22" y2="22" stroke="white" stroke-width="0.5" opacity="0.1"/>
+      <line x1="22" y1="6"  x2="6"  y2="22" stroke="white" stroke-width="0.5" opacity="0.1"/>`,
+  };
+
+  // Base (level 0) gems — drop from clicking
+  const GEM_TYPES = [
+    { id:'quartz',      name:'Quartz',      rarity:'common',    color:'#c8b8e8', color2:'#a090c0', effect:'click',   val:1,   desc:'+1 per click',     weight:32 },
+    { id:'topaz',       name:'Topaz',       rarity:'common',    color:'#f5c842', color2:'#c89818', effect:'passive', val:2,   desc:'+2 bows/sec',      weight:28 },
+    { id:'citrine',     name:'Citrine',     rarity:'common',    color:'#f0a030', color2:'#c07010', effect:'passive', val:1,   desc:'+1 bows/sec',      weight:30 },
+    { id:'garnet',      name:'Garnet',      rarity:'common',    color:'#c03040', color2:'#801020', effect:'click',   val:2,   desc:'+2 per click',     weight:26 },
+    { id:'sapphire',    name:'Sapphire',    rarity:'rare',      color:'#4090e0', color2:'#2060b0', effect:'click',   val:4,   desc:'+4 per click',     weight:16 },
+    { id:'emerald',     name:'Emerald',     rarity:'rare',      color:'#30c070', color2:'#108040', effect:'passive', val:6,   desc:'+6 bows/sec',      weight:16 },
+    { id:'tourmaline',  name:'Tourmaline',  rarity:'rare',      color:'#20c8b0', color2:'#0a8878', effect:'passive', val:4,   desc:'+4 bows/sec',      weight:18 },
+    { id:'spinel',      name:'Spinel',      rarity:'rare',      color:'#e050a0', color2:'#a02060', effect:'click',   val:5,   desc:'+5 per click',     weight:14 },
+    { id:'amethyst',    name:'Amethyst',    rarity:'rare',      color:'#9050e0', color2:'#5020a0', effect:'combo',   val:0.5, desc:'+0.5 max combo',   weight:12 },
+    { id:'ruby',        name:'Ruby',        rarity:'epic',      color:'#ff3050', color2:'#c01030', effect:'click',   val:8,   desc:'+8 per click',     weight:7  },
+    { id:'opal',        name:'Opal',        rarity:'epic',      color:'#e0f0ff', color2:'#b0d0f8', effect:'passive', val:10,  desc:'+10 bows/sec',     weight:7  },
+    { id:'moonstone',   name:'Moonstone',   rarity:'epic',      color:'#d0e8ff', color2:'#8090c8', effect:'combo',   val:1,   desc:'+1 max combo',     weight:6  },
+    { id:'tanzanite',   name:'Tanzanite',   rarity:'epic',      color:'#5040c8', color2:'#302090', effect:'click',   val:12,  desc:'+12 per click',    weight:5  },
+    { id:'alexandrite', name:'Alexandrite', rarity:'epic',      color:'#40e080', color2:'#20a050', effect:'passive', val:15,  desc:'+15 bows/sec',     weight:5  },
+    { id:'onyx',        name:'Onyx',        rarity:'epic',      color:'#606080', color2:'#303050', effect:'passive', val:8,   desc:'+8 bows/sec',      weight:6  },
+    { id:'painite',     name:'Painite',     rarity:'legendary', color:'#ff8020', color2:'#c04000', effect:'click',   val:25,  desc:'+25 per click',    weight:2  },
+  ];
+  const GEM_TOTAL_WEIGHT = GEM_TYPES.reduce((s, g) => s + g.weight, 0);
+
+  // Forge output table: combo of two gem ids → result gem id
+  // Missing combos → random same-or-higher rarity
+  const FORGE_RECIPES = {
+    'quartz+quartz':       'sapphire',
+    'quartz+topaz':        'tourmaline',
+    'quartz+citrine':      'opal',
+    'topaz+topaz':         'alexandrite',
+    'topaz+garnet':        'ruby',
+    'citrine+garnet':      'tanzanite',
+    'garnet+garnet':       'onyx',
+    'sapphire+emerald':    'alexandrite',
+    'sapphire+amethyst':   'moonstone',
+    'emerald+tourmaline':  'opal',
+    'tourmaline+spinel':   'tanzanite',
+    'spinel+amethyst':     'moonstone',
+    'ruby+moonstone':      'painite',
+    'tanzanite+alexandrite':'painite',
+    'ruby+opal':           'painite',
+  };
+
+  // ══════════════════════════════
+  //  ACHIEVEMENTS
+  // ══════════════════════════════
+  const ACHIEVEMENTS = [
+    { id: 'first_click',    name: 'First step',        desc: 'Click for the first time',        icon: 'I',   check: s => s.totalClicks >= 1 },
+    { id: 'clicks_100',     name: 'Clicker',           desc: 'Click 100 times',                 icon: 'II',  check: s => s.totalClicks >= 100 },
+    { id: 'clicks_1000',    name: 'Dedicated',         desc: 'Click 1,000 times',               icon: 'III', check: s => s.totalClicks >= 1000 },
+    { id: 'bows_1k',        name: 'Bow collector',     desc: 'Collect 1,000 bows total',        icon: 'A',   check: s => s.allTimeBows >= 1000 },
+    { id: 'bows_10k',       name: 'Bow hoarder',       desc: 'Collect 10,000 bows total',       icon: 'B',   check: s => s.allTimeBows >= 10000 },
+    { id: 'bows_100k',      name: 'Bow magnate',       desc: 'Collect 100,000 bows total',      icon: 'C',   check: s => s.allTimeBows >= 100000 },
+    { id: 'combo_5',        name: 'On a roll',         desc: 'Reach x5 combo',                  icon: 'x5',  check: s => s.maxCombo >= 5 },
+    { id: 'combo_max',      name: 'Unstoppable',       desc: 'Reach max combo x8',              icon: 'x8',  check: s => s.maxCombo >= 8 },
+    { id: 'unlock_felix',   name: 'Felix acquired',    desc: 'Unlock Felix Argyle',             icon: 'F',   check: s => s.unlockedChars.includes('felix') },
+    { id: 'unlock_nagisa',  name: 'Assassination start',desc: 'Unlock Nagisa Shiota',           icon: 'N',   check: s => s.unlockedChars.includes('nagisa') },
+    { id: 'first_prestige', name: 'Rebirth',           desc: 'Prestige for the first time',     icon: 'P',   check: s => s.prestige >= 1 },
+    { id: 'prestige_3',     name: 'Veteran',           desc: 'Prestige 3 times',                icon: 'PP',  check: s => s.prestige >= 3 },
+    { id: 'passive_100',    name: 'Idle master',       desc: 'Reach 100 bows/sec passive',      icon: '/s',  check: s => s.passive >= 100 },
+    { id: 'click_1000',     name: 'Click titan',       desc: 'Reach 1,000 per click power',     icon: 'CP',  check: s => s.clickPower >= 1000 },
+    { id: 'gem_first',      name: 'Gem finder',        desc: 'Collect your first gem',          icon: '◆',   check: s => s.gemsCollected >= 1 },
+    { id: 'gem_5',          name: 'Gem hunter',        desc: 'Collect 5 gems',                  icon: '◆◆',  check: s => s.gemsCollected >= 5 },
+    { id: 'all_astolfo',    name: 'Astolfo complete',   desc: 'Buy all Astolfo upgrades',        icon: 'AS',  check: s => CHARS[0].upgrades.every(u => (s.owned[u.id]||0) >= 1) },
+    { id: 'all_felix',      name: 'Felix complete',     desc: 'Buy all Felix upgrades',          icon: 'FX',  check: s => CHARS[1].upgrades.every(u => (s.owned[u.id]||0) >= 1) },
+    { id: 'all_nagisa',     name: 'Class 3-E graduate', desc: 'Buy all Nagisa upgrades',         icon: 'NG',  check: s => CHARS[2].upgrades.every(u => (s.owned[u.id]||0) >= 1) },
+    { id: 'unlock_shun',    name: 'Into the dark',      desc: 'Unlock Shun',                     icon: 'SH',  check: s => s.unlockedChars.includes('shun') },
+    { id: 'all_shun',       name: 'Void complete',      desc: 'Buy all Shun upgrades',           icon: 'VD',  check: s => CHARS[3].upgrades.every(u => (s.owned[u.id]||0) >= 1) },
+    { id: 'all_chars',      name: 'Full roster',        desc: 'Unlock all 4 characters',         icon: '4C',  check: s => s.unlockedChars.length >= 4 },
+  ];
+
+  // ══════════════════════════════
+  //  STATE
+  // ══════════════════════════════
+  let state = {
+    bows: 0, totalBows: 0, allTimeBows: 0, clickPower: 1, passive: 0,
+    prestige: 0, prestigeMult: 1, combo: 1, maxCombo: 1, bonusMaxCombo: 0,
+    comboDecay: null, lastClick: 0, owned: {},
+    passiveAccum: 0, totalClicks: 0,
+    activeChar: 0, unlockedChars: ['astolfo'],
+    unlockedAch: [],
+    gemSlots: [null, null, null],
+    gemStash: {},
+    pendingGem: null,
+    pendingStashSocket: null,
+    gemsCollected: 0,
+    forgeSlotA: null, forgeSlotB: null, forgePicking: null,
+  };
+  CHARS.forEach(c => c.upgrades.forEach(u => state.owned[u.id] = 0));
+
+  let soundOn = true;
+
+  // ══════════════════════════════
+  //  AUDIO
+  // ══════════════════════════════
+  const AudioCtx = window.AudioContext || window.webkitAudioContext;
+  let ctx = null;
+  function getCtx() { if (!ctx) ctx = new AudioCtx(); return ctx; }
+  function playTone(freq, dur, type='sine', vol=0.08) {
+    if (!soundOn) return;
+    try {
+      const c = getCtx();
+      const o = c.createOscillator(), g = c.createGain();
+      o.connect(g); g.connect(c.destination);
+      o.type = type; o.frequency.setValueAtTime(freq, c.currentTime);
+      g.gain.setValueAtTime(vol, c.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.001, c.currentTime + dur);
+      o.start(c.currentTime); o.stop(c.currentTime + dur);
+    } catch(e){}
+  }
+  function playClick() { playTone(600, 0.06, 'sine', 0.07); }
+  function playCrit()  { playTone(900, 0.18, 'sine', 0.12); setTimeout(()=>playTone(1100,0.12,'sine',0.08),80); }
+  function playGem()   { [800,1000,1200].forEach((f,i)=>setTimeout(()=>playTone(f,0.2,'sine',0.1),i*80)); }
+  function toggleSound() {
+    soundOn = !soundOn;
+    const btn = document.getElementById('sound-btn');
+    btn.textContent = soundOn ? 'SFX ON' : 'SFX OFF';
+    btn.classList.toggle('on', soundOn);
+  }
+
+  // ══════════════════════════════
+  //  UTILS
+  // ══════════════════════════════
+  function fmt(n) {
+    n = Math.floor(n);
+    if (n >= 1e9) return (n/1e9).toFixed(2) + 'B';
+    if (n >= 1e6) return (n/1e6).toFixed(2) + 'M';
+    if (n >= 1e3) return (n/1e3).toFixed(1) + 'K';
+    return n.toString();
+  }
+  function activeUpgrades() { return CHARS[state.activeChar].upgrades; }
+  function upgCost(u) { return Math.floor(u.baseCost * Math.pow(1.18, state.owned[u.id] || 0)); }
+
+  // ══════════════════════════════
+  //  GEM SVG — uses per-gem shape
+  // ══════════════════════════════
+  function gemSVG(gem, size) {
+    // gem can be a gem object or just {id, color, rarity}
+    const c = gem.color || '#c8b8e8';
+    const shapeFn = GEM_SHAPES[gem.id] || GEM_SHAPES.quartz;
+    const s = size || 28;
+    return `<svg viewBox="0 0 28 28" width="${s}" height="${s}" xmlns="http://www.w3.org/2000/svg">${shapeFn(c)}</svg>`;
+  }
+  function gemCrystalHTML(gem, size) {
+    return `<div class="gem-crystal gem-${gem.rarity}" style="width:${size||32}px;height:${size||32}px">${gemSVG(gem, size||32)}</div>`;
+  }
+
+  // ══════════════════════════════
+  //  GEM INVENTORY (stash)
+  // ══════════════════════════════
+  // state.gemStash = { [gemId]: count }
+  function stashAdd(gemId, count) {
+    state.gemStash[gemId] = (state.gemStash[gemId] || 0) + (count || 1);
+    renderForgeInventory();
+  }
+  function stashRemove(gemId) {
+    if (!state.gemStash[gemId]) return false;
+    state.gemStash[gemId]--;
+    if (state.gemStash[gemId] <= 0) delete state.gemStash[gemId];
+    renderForgeInventory();
+    return true;
+  }
+  function stashCount(gemId) { return state.gemStash[gemId] || 0; }
+
+  function renderForgeInventory() {
+    const el = document.getElementById('forge-inventory');
+    if (!el) return;
+    el.innerHTML = '';
+    const entries = GEM_TYPES.filter(g => stashCount(g.id) > 0);
+    if (!entries.length) {
+      el.innerHTML = '<div style="font-size:10px;color:var(--muted);padding:6px 0;">No gems in stash. Socket drops into slots or collect more!</div>';
+      return;
+    }
+    entries.forEach(g => {
+      const cnt = stashCount(g.id);
+      const div = document.createElement('div');
+      div.className = `inv-gem ${g.rarity}`;
+      if (state.forgeSlotA === g.id) div.classList.add('selected-A');
+      if (state.forgeSlotB === g.id) div.classList.add('selected-B');
+      div.title = `${g.name} (${g.rarity}) — ${g.desc}\nClick to use in forge`;
+      div.innerHTML = `${gemCrystalHTML(g, 28)}<div class="inv-gem-name">${g.name}</div><div class="inv-gem-count">${cnt}</div>`;
+      div.onclick = () => forgeInventoryClick(g.id);
+      el.appendChild(div);
+    });
+  }
+
+  // ══════════════════════════════
+  //  FORGE LOGIC
+  // ══════════════════════════════
+  let forgeInterval = null;
+  let forgeHeat     = 0;   // 0–120+
+  let forgeRunning  = false;
+  const FORGE_SPEED = 0.4; // % per tick (50ms) — reaches 100% in ~12s
+
+  function forgeRecipeKey(a, b) {
+    return [a, b].sort().join('+');
+  }
+  function forgeGetResult(gemA, gemB, heat) {
+    // heat 0–84 → common-tier output (downgrade)
+    // heat 85–99 → known recipe or random higher rarity
+    // heat 100+ → FAIL (shatter)
+    if (heat >= 100) return null; // shattered
+    const key = forgeRecipeKey(gemA, gemB);
+    const knownId = FORGE_RECIPES[key];
+    const qualityGrade = heat < 50 ? 'Crude' : heat < 75 ? 'Fine' : heat < 85 ? 'Polished' : heat < 92 ? 'Brilliant' : 'Masterwork';
+
+    let resultId;
+    if (knownId && heat >= 85) {
+      resultId = knownId;
+    } else {
+      // Random output based on heat bracket
+      const rarityPool = heat >= 85
+        ? GEM_TYPES.filter(g => g.rarity === 'rare' || g.rarity === 'epic')
+        : heat >= 50
+          ? GEM_TYPES.filter(g => g.rarity === 'rare')
+          : GEM_TYPES.filter(g => g.rarity === 'common');
+      resultId = rarityPool[Math.floor(Math.random() * rarityPool.length)].id;
+    }
+    return { id: resultId, grade: qualityGrade, heat };
+  }
+
+  function forgeSlotClick(slot) {
+    if (forgeRunning) return;
+    // Open the unified gem manager in forge-pick mode
+    state.forgePicking = slot;
+    openGemManager();
+    gmSwitchTab('forge-pick');
+  }
+
+  function forgePickGem(gemId, fromSocket) {
+    // fromSocket: index (0-2) if coming from a socket slot, else null (stash)
+    const slot = state.forgePicking;
+    if (!slot) return;
+
+    // If the other forge slot already holds this gem from stash, that's fine — same gem type ok
+    // Remove from source
+    if (fromSocket !== null && fromSocket !== undefined) {
+      // Pull from socket → goes to forge, socket becomes empty
+      _removeGem(fromSocket);
+    } else {
+      // Pull from stash
+      stashRemove(gemId);
+    }
+
+    // If the forge slot already had a gem, return it to stash
+    const prevId = slot === 'A' ? state.forgeSlotA : state.forgeSlotB;
+    if (prevId) {
+      stashAdd(prevId);
+      showToast(GEM_TYPES.find(g=>g.id===prevId).name + ' returned to stash');
+    }
+
+    if (slot === 'A') state.forgeSlotA = gemId;
+    else              state.forgeSlotB = gemId;
+
+    state.forgePicking = null;
+    closeGemManager();
+    updateForgeSlotDisplay();
+    updateForgeRecipeHint();
+    renderGemSlots();
+    renderForgeInventory();
+    addLog(`Set forge ${slot}: <span>${GEM_TYPES.find(g=>g.id===gemId).name}</span>`);
+  }
+
+  function forgePickCancel() {
+    state.forgePicking = null;
+    closeGemManager();
+  }
+
+  function forgeInventoryClick(gemId) {
+    // Quick-assign: if A is empty, fill A; else fill B
+    if (!state.forgeSlotA) { state.forgeSlotA = gemId; }
+    else if (!state.forgeSlotB) { state.forgeSlotB = gemId; }
+    else { state.forgeSlotA = gemId; } // override A
+    updateForgeSlotDisplay();
+    updateForgeRecipeHint();
+    renderForgeInventory();
+  }
+
+  function updateForgeSlotDisplay() {
+    ['A','B'].forEach(s => {
+      const slotEl = document.getElementById(`forge-slot-${s}`);
+      const inner  = document.getElementById(`forge-inner-${s}`);
+      const gemId  = s === 'A' ? state.forgeSlotA : state.forgeSlotB;
+      if (gemId) {
+        const g = GEM_TYPES.find(x => x.id === gemId);
+        inner.innerHTML = gemCrystalHTML(g, 36);
+        slotEl.classList.add('filled');
+      } else {
+        inner.innerHTML = s;
+        slotEl.classList.remove('filled');
+      }
+    });
+    const ready = state.forgeSlotA && state.forgeSlotB;
+    document.getElementById('forge-start-btn').disabled = !ready || forgeRunning;
+  }
+
+  function updateForgeRecipeHint() {
+    const el = document.getElementById('forge-recipe-hint');
+    if (!el) return;
+    if (!state.forgeSlotA || !state.forgeSlotB) { el.innerHTML = 'Pick two gems to combine'; return; }
+    const key = forgeRecipeKey(state.forgeSlotA, state.forgeSlotB);
+    const known = FORGE_RECIPES[key];
+    if (known) {
+      const g = GEM_TYPES.find(x => x.id === known);
+      el.innerHTML = `<span class="recipe-known">Known recipe → ${g.name} (reach 85%+)</span>`;
+    } else {
+      el.innerHTML = 'No known recipe — random result';
+    }
+  }
+
+  function forgeStart() {
+    if (!state.forgeSlotA || !state.forgeSlotB) return;
+    // Gems were already pulled from their source (socket or stash) when assigned via forgePickGem.
+    // Nothing to consume here — just start the heat.
+    forgeHeat = 0;
+    forgeRunning = true;
+    document.getElementById('forge-start-btn').disabled = true;
+    document.getElementById('forge-stop-btn').disabled = false;
+    document.getElementById('forge-result-area').innerHTML = '';
+    document.getElementById('forge-meter-needle').style.display = 'block';
+    clearInterval(forgeInterval);
+    forgeInterval = setInterval(forgeTickHeat, 50);
+  }
+
+  function forgeTickHeat() {
+    forgeHeat += FORGE_SPEED;
+    updateForgeMeterDisplay();
+    if (forgeHeat >= 120) {
+      // Auto-stop at 120 — definitely shattered
+      forgeStop();
+    }
+  }
+
+  function updateForgeMeterDisplay() {
+    const pct = Math.min(forgeHeat, 120);
+    const fill    = document.getElementById('forge-meter-fill');
+    const needle  = document.getElementById('forge-meter-needle');
+    const pctEl   = document.getElementById('forge-meter-pct');
+    fill.style.width   = Math.min(pct / 1.2, 100) + '%'; // 120 = 100% visual width
+    needle.style.left  = Math.min(pct / 1.2, 99.5) + '%';
+    pctEl.textContent  = Math.floor(pct) + '%';
+    pctEl.className    = pct >= 100 ? 'danger' : pct >= 85 ? 'perfect' : '';
+  }
+
+  function forgeStop() {
+    clearInterval(forgeInterval);
+    forgeRunning = false;
+    document.getElementById('forge-stop-btn').disabled = true;
+    document.getElementById('forge-meter-needle').style.display = 'none';
+    const finalHeat = forgeHeat;
+    const result = forgeGetResult(state.forgeSlotA, state.forgeSlotB, finalHeat);
+    const resultArea = document.getElementById('forge-result-area');
+
+    if (!result) {
+      resultArea.innerHTML = `<div style="color:#ff4040;font-family:'Rajdhani',sans-serif;font-size:14px;font-weight:700;text-shadow:0 0 10px rgba(255,64,64,0.7)">💥 SHATTERED — gems lost</div>
+        <div style="font-size:10px;color:var(--muted);margin-top:4px">Heat went past 100%. Next time, lock in before 100%.</div>`;
+      playTone(120, 0.4, 'sawtooth', 0.12);
+    } else {
+      const g = GEM_TYPES.find(x => x.id === result.id);
+      const gradeColor = result.grade === 'Masterwork' ? 'var(--gold)' : result.grade === 'Brilliant' ? 'var(--pink)' : result.grade === 'Polished' ? '#a060f0' : 'var(--muted)';
+      resultArea.innerHTML = `
+        <div style="font-size:10px;color:var(--muted);font-family:'Rajdhani',sans-serif;letter-spacing:0.1em;text-transform:uppercase">Forged at ${Math.floor(finalHeat)}%</div>
+        <div class="forge-result-gem ${g.rarity}" style="margin-top:4px">
+          ${gemCrystalHTML(g, 36)}
+          <div>
+            <div class="forge-result-name" style="color:${g.color}">${g.name}</div>
+            <div class="forge-result-grade" style="color:${gradeColor}">${result.grade}</div>
+            <div style="font-size:10px;color:var(--muted)">${g.desc}</div>
+          </div>
+        </div>
+        <button class="forge-result-btn" onclick="forgeCollect('${g.id}')">Add to Stash</button>`;
+      playGem();
+      addLog(`Forged <span>${result.grade} ${g.name}</span> at ${Math.floor(finalHeat)}%`);
+    }
+
+    // Reset slot selections
+    state.forgeSlotA = null;
+    state.forgeSlotB = null;
+    forgeHeat = 0;
+    updateForgeMeterDisplay();
+    updateForgeSlotDisplay();
+    updateForgeRecipeHint();
+    renderForgeInventory();
+  }
+
+  function forgeCollect(gemId) {
+    stashAdd(gemId);
+    document.getElementById('forge-result-area').innerHTML = '';
+    const gem = GEM_TYPES.find(g => g.id === gemId);
+    showToast('✦ ' + gem.name + ' added to stash!');
+    renderForgeInventory();
+    renderGmStash();
+  }
+
+  // ══════════════════════════════
+  //  GEM DROP LOGIC
+  // ══════════════════════════════
+  // 2% flat chance per click; type is weight-selected
+  function rollGemDrop() {
+    if (Math.random() >= 0.02) return null;
+    let r = Math.random() * GEM_TOTAL_WEIGHT;
+    for (const gem of GEM_TYPES) { r -= gem.weight; if (r <= 0) return gem; }
+    return GEM_TYPES[GEM_TYPES.length - 1];
+  }
+
+  // ══════════════════════════════════════════════════
+  //  GEM MANAGER — unified panel, nothing gets lost
+  // ══════════════════════════════════════════════════
+  // Rules:
+  //  • Dropped gem always opens the manager with a banner
+  //  • "→ Stash" from banner puts it in stash
+  //  • "✕" on banner discards that drop (player chose to skip)
+  //  • Socket cards: "→ Stash" moves gem to stash, "→ Forge A/B" moves to forge slot
+  //  • Stash items: "Socket" picks the next empty slot (or shows replace UI in sockets tab)
+  //  • Nothing silently disappears — every action is intentional
+
+  let gmDropTimerInterval = null;
+  let gmActiveTab = 'sockets';
+
+  function openGemManager() {
+    // If not in forge-pick mode, reset title
+    if (!state.forgePicking) {
+      document.getElementById('gm-title').textContent = '✦ Gem Manager';
+      document.getElementById('gm-subtitle').textContent = 'socket, stash, forge — nothing gets lost';
+    }
+    renderGmSockets();
+    renderGmStash();
+    document.getElementById('gem-manager-backdrop').classList.add('active');
+    document.getElementById('gem-manager').classList.add('active');
+  }
+
+  function closeGemManager() {
+    // If we're in forge-pick mode, cancel it cleanly first
+    if (state.forgePicking) {
+      state.forgePicking = null;
+    }
+    state.pendingStashSocket = null;
+    document.getElementById('gem-manager-backdrop').classList.remove('active');
+    document.getElementById('gem-manager').classList.remove('active');
+    // Reset tab bar visibility
+    document.getElementById('gm-tabs').style.display = '';
+  }
+
+  function gmSwitchTab(tab) {
+    gmActiveTab = tab;
+    const tabs = ['sockets','stash'];
+    document.querySelectorAll('.gm-tab').forEach((t, i) =>
+      t.classList.toggle('active', tabs[i] === tab));
+    // Show/hide all panels
+    document.getElementById('gm-panel-sockets').style.display    = tab === 'sockets'    ? '' : 'none';
+    document.getElementById('gm-panel-stash').style.display      = tab === 'stash'      ? '' : 'none';
+    document.getElementById('gm-panel-forge-pick').style.display = tab === 'forge-pick' ? '' : 'none';
+    // Hide the tab bar when in forge-pick mode (it's a special flow, not a normal tab)
+    document.getElementById('gm-tabs').style.display = tab === 'forge-pick' ? 'none' : '';
+
+    if (tab === 'stash')       { document.getElementById('gm-title').textContent = '✦ Gem Manager'; document.getElementById('gm-subtitle').textContent = 'socket, stash, forge — nothing gets lost'; renderGmStash(); }
+    if (tab === 'sockets')     { document.getElementById('gm-title').textContent = '✦ Gem Manager'; document.getElementById('gm-subtitle').textContent = 'socket, stash, forge — nothing gets lost'; renderGmSockets(); }
+    if (tab === 'forge-pick')  renderGmForgePick();
+  }
+
+  function renderGmForgePick() {
+    const slot = state.forgePicking;
+    const inner = document.getElementById('gm-forge-pick-inner');
+    if (!inner) return;
+
+    // Update title
+    document.getElementById('gm-title').textContent = `✦ Choose Gem for Forge ${slot}`;
+    document.getElementById('gm-subtitle').textContent = 'pick from sockets or stash — gem moves to forge';
+
+    inner.innerHTML = '';
+
+    // ── Section: Socketed gems ────────────────────
+    const socketedGems = state.gemSlots
+      .map((g, i) => g ? { gem: g, slotIdx: i } : null)
+      .filter(Boolean);
+
+    const sockHead = document.createElement('div');
+    sockHead.style.cssText = 'font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-family:"Rajdhani",sans-serif;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)';
+    sockHead.textContent = socketedGems.length ? 'Socketed Gems' : 'Socketed Gems — none equipped';
+    inner.appendChild(sockHead);
+
+    if (socketedGems.length) {
+      const sockGrid = document.createElement('div');
+      sockGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px';
+      socketedGems.forEach(({ gem, slotIdx }) => {
+        const item = document.createElement('div');
+        item.className = `gm-stash-item ${gem.rarity}`;
+        item.style.cursor = 'pointer';
+        item.innerHTML = `
+          <div class="gm-stash-count" style="font-size:8px;color:var(--muted)">S${slotIdx+1}</div>
+          ${gemCrystalHTML(gem, 30)}
+          <div class="gm-stash-name">${gem.name}</div>
+          <div style="font-size:8px;color:var(--muted);text-align:center">${gem.desc}</div>
+          <button class="gm-stash-btn sock" style="margin-top:3px;width:100%" onclick="forgePickGem('${gem.id}', ${slotIdx})">Use</button>`;
+        sockGrid.appendChild(item);
+      });
+      inner.appendChild(sockGrid);
+    }
+
+    // ── Section: Stash gems ───────────────────────
+    const stashHead = document.createElement('div');
+    stashHead.style.cssText = 'font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;font-family:"Rajdhani",sans-serif;font-weight:700;margin-bottom:8px;padding-bottom:5px;border-bottom:1px solid var(--border)';
+    const stashGems = GEM_TYPES.filter(g => stashCount(g.id) > 0);
+    stashHead.textContent = stashGems.length ? 'Stash' : 'Stash — empty';
+    inner.appendChild(stashHead);
+
+    if (stashGems.length) {
+      const stashGrid = document.createElement('div');
+      stashGrid.style.cssText = 'display:flex;flex-wrap:wrap;gap:8px';
+      stashGems.forEach(g => {
+        const item = document.createElement('div');
+        item.className = `gm-stash-item ${g.rarity}`;
+        item.style.cursor = 'pointer';
+        item.innerHTML = `
+          <div class="gm-stash-count">${stashCount(g.id)}</div>
+          ${gemCrystalHTML(g, 30)}
+          <div class="gm-stash-name">${g.name}</div>
+          <div style="font-size:8px;color:var(--muted);text-align:center">${g.desc}</div>
+          <button class="gm-stash-btn sock" style="margin-top:3px;width:100%" onclick="forgePickGem('${g.id}', null)">Use</button>`;
+        stashGrid.appendChild(item);
+      });
+      inner.appendChild(stashGrid);
+    }
+
+    if (!socketedGems.length && !stashGems.length) {
+      const none = document.createElement('div');
+      none.style.cssText = 'font-size:11px;color:var(--muted);padding:16px 0;text-align:center';
+      none.textContent = 'No gems anywhere — click the main button to earn some!';
+      inner.appendChild(none);
+    }
+  }
+
+  // ── Drop banner ──────────────────────────────────
+  function showGemPopup(gem) {
+    state.pendingGem = gem;
+    clearInterval(gmDropTimerInterval);
+
+    // Populate banner
+    document.getElementById('gm-drop-crystal').innerHTML = gemCrystalHTML(gem, 40);
+    document.getElementById('gm-drop-gem-name').textContent = gem.name + ' (' + gem.rarity + ')';
+    document.getElementById('gm-drop-gem-sub').textContent  = gem.desc;
+    document.getElementById('gm-drop-banner').classList.add('visible');
+
+    let t = 20;
+    document.getElementById('gm-drop-timer').textContent = t + 's';
+    gmDropTimerInterval = setInterval(() => {
+      t--;
+      const el = document.getElementById('gm-drop-timer');
+      if (el) el.textContent = t + 's';
+      if (t <= 0) gmDropDismiss();
+    }, 1000);
+
+    // Open manager, land on Sockets tab so player sees slots
+    gmSwitchTab('sockets');
+    openGemManager();
+  }
+
+  function gmDropDismiss() {
+    // Player explicitly skipped this drop — gem is lost, that's intentional
+    state.pendingGem = null;
+    clearInterval(gmDropTimerInterval);
+    document.getElementById('gm-drop-banner').classList.remove('visible');
+    renderGmSockets();
+  }
+
+  function gmDropToStash() {
+    if (!state.pendingGem) return;
+    const gem = state.pendingGem;
+    state.pendingGem = null;
+    clearInterval(gmDropTimerInterval);
+    document.getElementById('gm-drop-banner').classList.remove('visible');
+    stashAdd(gem.id);
+    state.gemsCollected++;
+    addLog(`Stashed <span>${gem.name}</span>`);
+    showToast('✦ ' + gem.name + ' → stash');
+    checkAchievements();
+    renderGmSockets();
+    renderGmStash();
+    // Also refresh forge inventory if visible
+    if (document.getElementById('tab-forge').classList.contains('active')) renderForgeInventory();
+  }
+
+  // Socket a drop into a specific slot from inside the manager
+  function gmDropToSlot(idx) {
+    if (!state.pendingGem) return;
+    const gem = state.pendingGem;
+    state.pendingGem = null;
+    clearInterval(gmDropTimerInterval);
+    document.getElementById('gm-drop-banner').classList.remove('visible');
+    _placeGem(idx, gem);
+    showToast('✦ ' + gem.name + ' socketed in slot ' + (idx+1));
+  }
+
+  // ── Socket card actions ──────────────────────────
+  // Move a socketed gem to stash (no loss)
+  function gmSocketToStash(idx) {
+    const gem = state.gemSlots[idx];
+    if (!gem) return;
+    _removeGem(idx);
+    stashAdd(gem.id);
+    addLog(`Moved <span>${gem.name}</span> → stash`);
+    showToast('✦ ' + gem.name + ' → stash');
+    renderGmSockets();
+    renderGmStash();
+    if (document.getElementById('tab-forge').classList.contains('active')) renderForgeInventory();
+  }
+
+  // Move a socketed gem directly to forge slot A or B
+  function gmSocketToForge(idx, slot) {
+    const gem = state.gemSlots[idx];
+    if (!gem) return;
+    _removeGem(idx);
+    if (slot === 'A') state.forgeSlotA = gem.id;
+    else              state.forgeSlotB = gem.id;
+    addLog(`Moved <span>${gem.name}</span> → forge ${slot}`);
+    showToast('✦ ' + gem.name + ' → forge ' + slot);
+    renderGmSockets();
+    updateForgeSlotDisplay();
+    updateForgeRecipeHint();
+    // Switch to forge tab for convenience
+    switchTab('forge');
+    closeGemManager();
+  }
+
+  // ── Stash actions ────────────────────────────────
+  // Socket from stash into first empty slot, or mark for manual slot pick
+  function gmStashToSocket(gemId) {
+    const emptyIdx = state.gemSlots.findIndex(g => g === null);
+    if (emptyIdx !== -1) {
+      stashRemove(gemId);
+      const gem = GEM_TYPES.find(g => g.id === gemId);
+      _placeGem(emptyIdx, gem);
+      showToast('✦ ' + gem.name + ' → slot ' + (emptyIdx+1));
+      renderGmStash();
+      gmSwitchTab('sockets');
+    } else {
+      // All full — go to sockets tab and highlight that the player needs to pick a slot
+      state.pendingStashSocket = gemId;
+      gmSwitchTab('sockets');
+      showToast('Pick a slot to replace');
+    }
+  }
+
+  // Called when player clicks a socket card while pendingStashSocket is set
+  function gmReplaceSlotWithStash(idx) {
+    const gemId = state.pendingStashSocket;
+    if (!gemId) return;
+    state.pendingStashSocket = null;
+    stashRemove(gemId);
+    const oldGem = state.gemSlots[idx];
+    if (oldGem) {
+      _removeGem(idx);
+      stashAdd(oldGem.id); // old gem goes back to stash safely
+      addLog(`Swapped <span>${oldGem.name}</span> ↔ <span>${GEM_TYPES.find(g=>g.id===gemId).name}</span>`);
+    }
+    const gem = GEM_TYPES.find(g => g.id === gemId);
+    _placeGem(idx, gem);
+    showToast('✦ ' + gem.name + ' socketed, ' + (oldGem ? oldGem.name + ' back to stash' : ''));
+    renderGmSockets();
+    renderGmStash();
+  }
+
+  // Move stash gem to forge slot
+  function gmStashToForge(gemId, slot) {
+    if (!stashRemove(gemId)) return;
+    if (slot === 'A') state.forgeSlotA = gemId;
+    else              state.forgeSlotB = gemId;
+    const gem = GEM_TYPES.find(g => g.id === gemId);
+    addLog(`Moved <span>${gem.name}</span> → forge ${slot}`);
+    showToast('✦ ' + gem.name + ' → forge ' + slot);
+    renderGmStash();
+    updateForgeSlotDisplay();
+    updateForgeRecipeHint();
+    switchTab('forge');
+    closeGemManager();
+  }
+
+  // ── Render: socket cards ─────────────────────────
+  function renderGmSockets() {
+    const container = document.getElementById('gm-sockets');
+    container.innerHTML = '';
+    const hasPendingStash = !!state.pendingStashSocket;
+    const hasDrop = !!state.pendingGem;
+
+    for (let i = 0; i < 3; i++) {
+      const gem = state.gemSlots[i];
+      const card = document.createElement('div');
+      card.className = 'gm-socket-card' + (gem ? ' has-gem' : '');
+
+      if (hasPendingStash && !gem) {
+        card.classList.add('is-drop-target');
+      }
+
+      const numEl = `<div class="gm-socket-num">Slot ${i+1}</div>`;
+
+      if (gem) {
+        const actions = [];
+        actions.push(`<button class="gm-sock-btn to-stash"  onclick="gmSocketToStash(${i})">→ Stash</button>`);
+        actions.push(`<button class="gm-sock-btn to-forge"  onclick="gmSocketToForge(${i},'A')">→ Forge A</button>`);
+        actions.push(`<button class="gm-sock-btn to-forge"  onclick="gmSocketToForge(${i},'B')">→ Forge B</button>`);
+
+        card.innerHTML = `
+          ${numEl}
+          <div class="gm-socket-gem">${gemCrystalHTML(gem, 50)}</div>
+          <div class="gm-socket-name">${gem.name}</div>
+          <div class="gm-socket-rarity">${gem.rarity}</div>
+          <div class="gm-socket-desc">${gem.desc}</div>
+          <div class="gm-socket-actions">${actions.join('')}</div>`;
+
+        // If pendingStashSocket, clicking a filled slot replaces it
+        if (hasPendingStash) {
+          const overlay = document.createElement('button');
+          overlay.className = 'gm-sock-btn socket-drop';
+          overlay.style.cssText = 'margin-top:4px;width:100%';
+          overlay.textContent = '↙ Place here (send ' + gem.name + ' to stash)';
+          overlay.onclick = () => gmReplaceSlotWithStash(i);
+          card.querySelector('.gm-socket-actions').appendChild(overlay);
+        }
+
+        // If pendingGem (drop), show "socket here" button
+        if (hasDrop) {
+          const overlay = document.createElement('button');
+          overlay.className = 'gm-sock-btn socket-drop';
+          overlay.style.cssText = 'margin-top:4px;width:100%';
+          overlay.textContent = '↙ Replace with drop';
+          overlay.onclick = () => { _removeGem(i); stashAdd(gem.id); gmDropToSlot(i); renderGmSockets(); renderGmStash(); };
+          card.querySelector('.gm-socket-actions').appendChild(overlay);
+        }
+      } else {
+        // Empty slot
+        let emptyContent = `<div class="gm-socket-empty">empty</div>`;
+        const actions = [];
+
+        if (hasPendingStash) {
+          actions.push(`<button class="gm-sock-btn socket-drop" onclick="gmReplaceSlotWithStash(${i})">↙ Place here</button>`);
+        }
+        if (hasDrop) {
+          actions.push(`<button class="gm-sock-btn socket-drop" onclick="gmDropToSlot(${i})">↙ Socket drop here</button>`);
+        }
+
+        card.innerHTML = `
+          ${numEl}
+          <div class="gm-socket-gem">${emptyContent}</div>
+          <div class="gm-socket-name" style="color:var(--muted)">—</div>
+          <div class="gm-socket-actions">${actions.join('')}</div>`;
+      }
+
+      container.appendChild(card);
+    }
+
+    // Also refresh mini bar
+    renderGemSlots();
+  }
+
+  // ── Render: stash grid ───────────────────────────
+  function renderGmStash() {
+    const grid  = document.getElementById('gm-stash-grid');
+    const empty = document.getElementById('gm-stash-empty');
+    if (!grid) return;
+    grid.innerHTML = '';
+    const entries = GEM_TYPES.filter(g => stashCount(g.id) > 0);
+    empty.style.display = entries.length ? 'none' : '';
+
+    entries.forEach(g => {
+      const cnt = stashCount(g.id);
+      const item = document.createElement('div');
+      item.className = `gm-stash-item ${g.rarity}`;
+
+      item.innerHTML = `
+        <div class="gm-stash-count">${cnt}</div>
+        ${gemCrystalHTML(g, 30)}
+        <div class="gm-stash-name">${g.name}</div>
+        <div style="font-size:8px;color:var(--muted);text-align:center">${g.desc}</div>
+        <div class="gm-stash-actions">
+          <button class="gm-stash-btn sock"    onclick="gmStashToSocket('${g.id}')">Socket</button>
+          <button class="gm-stash-btn forge-a" onclick="gmStashToForge('${g.id}','A')">FA</button>
+          <button class="gm-stash-btn forge-b" onclick="gmStashToForge('${g.id}','B')">FB</button>
+        </div>`;
+      grid.appendChild(item);
+    });
+
+    // Also keep forge-inventory in sync
+    renderForgeInventory();
+  }
+
+  // ── Mini gem slot bar (center) ───────────────────
+  function renderGemSlots() {
+    for (let i = 0; i < 3; i++) {
+      const slot  = document.getElementById('gem-slot-' + i);
+      const inner = document.getElementById('gem-slot-inner-' + i);
+      const gem   = state.gemSlots[i];
+      if (gem) {
+        slot.classList.add('gem-filled');
+        inner.innerHTML = gemCrystalHTML(gem, 34);
+      } else {
+        slot.classList.remove('gem-filled');
+        inner.innerHTML = `<span style="font-size:9px;color:var(--muted);font-family:'Rajdhani',sans-serif">${i+1}</span>`;
+      }
+    }
+  }
+
+  // ── Core gem state helpers ───────────────────────
+  function _placeGem(idx, gem) {
+    // Internal: place without stash logic (that's handled by callers)
+    if (state.gemSlots[idx]) _removeGem(idx);
+    state.gemSlots[idx] = gem;
+    state.gemsCollected++;
+    applyGemEffect(gem, true);
+    renderGemSlots();
+    addLog(`Socketed <span>${gem.name}</span> in slot ${idx+1}`);
+    playGem();
+    checkAchievements();
+    renderGmSockets();
+  }
+
+  function _removeGem(idx) {
+    const gem = state.gemSlots[idx];
+    if (!gem) return null;
+    applyGemEffect(gem, false);
+    state.gemSlots[idx] = null;
+    renderGemSlots();
+    return gem;
+  }
+
+  // Legacy aliases used by forge and prestige
+  function placeGem(idx, gem)       { _placeGem(idx, gem); }
+  function removeGem(idx, silent)   {
+    const gem = _removeGem(idx);
+    if (gem && !silent) addLog(`Removed <span>${gem.name}</span> from slot ${idx+1}`);
+  }
+
+  function applyGemEffect(gem, add) {
+    const sign = add ? 1 : -1;
+    if (gem.effect === 'click')   state.clickPower    = Math.max(1, state.clickPower    + sign * gem.val);
+    if (gem.effect === 'passive') state.passive       = Math.max(0, state.passive       + sign * gem.val);
+    if (gem.effect === 'combo')   state.bonusMaxCombo = Math.max(0, state.bonusMaxCombo + sign * gem.val);
+    renderAll();
+  }
+
+  // Dismiss any pending drop without doing anything (used by prestige)
+  function dismissGemPopup() {
+    gmDropDismiss();
+    closeGemManager();
+  }
+
+  // ══════════════════════════════
+  //  CLICK HANDLER
+  // ══════════════════════════════
+  function handleClick(e) {
+    const now = Date.now(), gap = now - state.lastClick;
+    state.lastClick = now;
+    state.totalClicks++;
+    const maxCombo = 8 + state.bonusMaxCombo;
+    if (gap < 600) {
+      state.combo = Math.min(state.combo + 0.2, maxCombo);
+      state.maxCombo = Math.max(state.maxCombo, state.combo);
+    }
+    clearTimeout(state.comboDecay);
+    state.comboDecay = setTimeout(() => { state.combo = 1; renderCombo(); }, 1200);
+    const isCrit = Math.random() < 0.05;
+    let earned = Math.floor(state.clickPower * state.combo * state.prestigeMult * (isCrit ? 3 : 1));
+    state.bows += earned; state.totalBows += earned; state.allTimeBows += earned;
+    if (isCrit) {
+      document.getElementById('click-img').classList.remove('crit');
+      void document.getElementById('click-img').offsetWidth;
+      document.getElementById('click-img').classList.add('crit');
+      playCrit();
+    } else { playClick(); }
+    renderCombo(); spawnFloat(e, earned, isCrit); triggerRing(); renderAll(); checkAchievements();
+
+    // Gem drop check (only if no popup is already open)
+    if (!state.pendingGem) {
+      const dropped = rollGemDrop();
+      if (dropped) {
+        spawnGemFloat(e, dropped);
+        showGemPopup(dropped);
+      }
+    }
+  }
+
+  function spawnFloat(e, val, isCrit) {
+    const el = document.createElement('div');
+    el.className = 'float' + (isCrit ? ' crit' : val >= 50 ? ' big' : '');
+    el.textContent = '+' + fmt(val) + (isCrit ? ' CRIT!' : '');
+    const r = document.getElementById('click-wrap').getBoundingClientRect();
+    el.style.left = (r.left + Math.random() * r.width) + 'px';
+    el.style.top  = (r.top  + Math.random() * r.height * 0.5) + 'px';
+    document.getElementById('floats').appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  function spawnGemFloat(e, gem) {
+    const el = document.createElement('div');
+    el.className = 'float gem-drop';
+    el.textContent = '✦ ' + gem.name + ' dropped!';
+    const r = document.getElementById('click-wrap').getBoundingClientRect();
+    el.style.left = (r.left + Math.random() * r.width * 0.5) + 'px';
+    el.style.top  = (r.top + 20) + 'px';
+    document.getElementById('floats').appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+
+  function triggerRing() {
+    const ring = document.getElementById('click-ring');
+    ring.classList.remove('burst'); void ring.offsetWidth; ring.classList.add('burst');
+  }
+
+  // ══════════════════════════════
+  //  RENDER
+  // ══════════════════════════════
+  function renderCombo() {
+    const maxCombo = 8 + state.bonusMaxCombo;
+    document.getElementById('combo-num').textContent = 'x' + state.combo.toFixed(1) + ' COMBO';
+    document.getElementById('combo-bar').style.width = (((state.combo - 1) / (maxCombo - 1)) * 100) + '%';
+    document.getElementById('combo-num').style.textShadow = state.combo > 4
+      ? '0 0 20px var(--pink-glow), 0 0 40px var(--pink-glow)' : '';
+  }
+
+  function renderStats() {
+    document.getElementById('bows-count').textContent = fmt(state.bows);
+    document.getElementById('per-click').textContent = fmt(state.clickPower);
+    document.getElementById('passive-val').textContent = fmt(state.passive);
+    document.getElementById('prestige-count').textContent = state.prestige;
+    document.getElementById('prestige-mult').textContent = state.prestigeMult.toFixed(1);
+    document.getElementById('prestige-btn').disabled = Math.floor(state.totalBows) < 10000;
+    // update lock badges
+    CHARS.forEach((c, i) => {
+      if (i === 0) return;
+      const card = document.getElementById('card-' + c.id);
+      if (!card) return;
+      if (state.unlockedChars.includes(c.id)) {
+        card.classList.remove('locked');
+        const badge = card.querySelector('.char-lock-badge');
+        if (badge) badge.remove();
+      } else {
+        const costEl = card.querySelector('.char-lock-cost');
+        if (costEl) costEl.textContent = fmt(c.unlockCost) + ' bows';
+      }
+    });
+    // stats tab
+    const sg = document.getElementById('stats-grid');
+    if (sg) {
+      sg.innerHTML = [
+        ['Total clicks', fmt(state.totalClicks)],
+        ['All-time bows', fmt(state.allTimeBows)],
+        ['Max combo', state.maxCombo.toFixed(1)],
+        ['Gems collected', state.gemsCollected],
+        ['Prestige count', state.prestige],
+        ['Prestige mult', 'x' + state.prestigeMult.toFixed(1)],
+      ].map(([l,v]) => `<div class="stat-cell"><div class="stat-cell-label">${l}</div><div class="stat-cell-val">${v}</div></div>`).join('');
+    }
+  }
+
+  function renderUpgrades() {
+    const upgs = activeUpgrades();
+    const list = document.getElementById('upg-list');
+    if (list.dataset.charId !== CHARS[state.activeChar].id) {
+      list.innerHTML = '';
+      list.dataset.charId = CHARS[state.activeChar].id;
+      upgs.forEach((u) => {
+        const btn = document.createElement('button');
+        btn.className = 'upg-btn';
+        btn.dataset.uid = u.id;
+        btn.innerHTML = `
+          <div class="upg-top">
+            <span class="upg-name">${u.name}</span>
+            <span class="upg-owned" data-owned></span>
+          </div>
+          <div class="upg-desc">${u.desc}</div>
+          <div class="upg-cost" data-cost></div>
+        `;
+        btn.addEventListener('click', () => buyUpgrade(u));
+        list.appendChild(btn);
+      });
+    }
+    Array.from(list.children).forEach((btn, i) => {
+      const u = upgs[i];
+      const cost = upgCost(u);
+      const canAfford = state.bows >= cost;
+      btn.disabled = !canAfford;
+      btn.classList.toggle('affordable', canAfford);
+      btn.querySelector('[data-owned]').textContent = state.owned[u.id] || 0;
+      btn.querySelector('[data-cost]').textContent = fmt(cost) + ' bows';
+    });
+  }
+
+  function renderAchievements() {
+    const list = document.getElementById('ach-list');
+    if (list.children.length === ACHIEVEMENTS.length) return;
+    list.innerHTML = '';
+    ACHIEVEMENTS.forEach(a => {
+      const unlocked = state.unlockedAch.includes(a.id);
+      const div = document.createElement('div');
+      div.className = 'ach-item' + (unlocked ? ' unlocked' : '');
+      div.dataset.achId = a.id;
+      div.innerHTML = `
+        <div class="ach-icon">${unlocked ? a.icon : '?'}</div>
+        <div>
+          <div class="ach-name">${unlocked ? a.name : '???'}</div>
+          <div class="ach-desc">${unlocked ? a.desc : 'Keep playing to unlock'}</div>
+        </div>
+      `;
+      list.appendChild(div);
+    });
+  }
+
+  function checkAchievements() {
+    let newUnlock = false;
+    ACHIEVEMENTS.forEach(a => {
+      if (!state.unlockedAch.includes(a.id) && a.check(state)) {
+        state.unlockedAch.push(a.id);
+        newUnlock = true;
+        showToast('✦ Achievement: ' + a.name);
+        addLog(`Achievement: <span>${a.name}</span>`);
+      }
+    });
+    if (newUnlock) {
+      document.getElementById('ach-list').innerHTML = '';
+      renderAchievements();
+    }
+  }
+
+  function buyUpgrade(u) {
+    const cost = upgCost(u);
+    if (state.bows < cost) return;
+    state.bows -= cost;
+    state.owned[u.id] = (state.owned[u.id] || 0) + 1;
+    if (u.type === 'click')   state.clickPower += u.val;
+    if (u.type === 'passive') state.passive += u.val;
+    addLog(`Bought <span>${u.name}</span>`);
+    playTone(440, 0.1, 'sine', 0.06);
+    renderAll(); checkAchievements();
+  }
+
+  function selectChar(idx) {
+    const c = CHARS[idx];
+    if (idx !== 0 && !state.unlockedChars.includes(c.id)) {
+      if (state.bows >= c.unlockCost) {
+        state.bows -= c.unlockCost;
+        state.unlockedChars.push(c.id);
+        addLog(`Unlocked <span>${c.name}</span>`);
+        showToast('✦ Unlocked: ' + c.name);
+        playGem();
+      } else {
+        showToast('Need ' + fmt(c.unlockCost) + ' bows to unlock ' + c.name);
+        return;
+      }
+    }
+    state.activeChar = idx;
+    document.querySelectorAll('.char-card').forEach((el, i) => el.classList.toggle('active', i === idx));
+    document.getElementById('click-img').src = c.img;
+    document.getElementById('side-char-img').src = c.img;
+    document.getElementById('side-char-label').textContent = c.name;
+    document.getElementById('char-name-display').textContent = c.name;
+    document.getElementById('upg-list').dataset.charId = '';
+    document.body.setAttribute('data-char', c.id);
+    renderAll(); checkAchievements();
+  }
+
+  function switchTab(name) {
+    const names = ['upgrades', 'achievements', 'forge', 'stats', 'prestige'];
+    document.querySelectorAll('.stab').forEach((t, i) => t.classList.toggle('active', names[i] === name));
+    document.querySelectorAll('.tab-panel').forEach(p => p.classList.remove('active'));
+    document.getElementById('tab-' + name).classList.add('active');
+    if (name === 'achievements') renderAchievements();
+    if (name === 'forge') { renderForgeInventory(); updateForgeSlotDisplay(); updateForgeRecipeHint(); }
+  }
+
+  function doPrestige() {
+    if (Math.floor(state.totalBows) < 10000) return;
+    state.gemSlots.forEach((g) => { if (g) applyGemEffect(g, false); });
+    state.gemSlots = [null, null, null];
+    state.pendingGem = null;
+    state.pendingStashSocket = null;
+    clearInterval(gmDropTimerInterval);
+    closeGemManager();
+    state.prestige++; state.prestigeMult = 1 + state.prestige * 0.5;
+    state.bows = 0; state.totalBows = 0; state.clickPower = 1; state.passive = 0;
+    state.passiveAccum = 0; state.combo = 1; state.bonusMaxCombo = 0;
+    CHARS.forEach(c => c.upgrades.forEach(u => state.owned[u.id] = 0));
+    renderGemSlots();
+    addLog(`<span>Prestiged!</span> Now x${state.prestigeMult.toFixed(1)}`);
+    showToast('✦ PRESTIGE! Bonus: x' + state.prestigeMult.toFixed(1));
+    playGem();
+    renderAll(); checkAchievements();
+  }
+
+  function addLog(msg) {
+    const entries = document.getElementById('log-entries');
+    const div = document.createElement('div');
+    div.className = 'log-item'; div.innerHTML = msg;
+    entries.insertBefore(div, entries.firstChild);
+    while (entries.children.length > 16) entries.removeChild(entries.lastChild);
+  }
+
+  let toastTimer;
+  function showToast(msg) {
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => t.classList.remove('show'), 2800);
+  }
+
+  function renderAll() { renderStats(); renderUpgrades(); }
+
+  // ══════════════════════════════
+  //  PASSIVE TICK
+  // ══════════════════════════════
+  setInterval(() => {
+    if (state.passive > 0) {
+      const gain = state.passive * state.prestigeMult / 20;
+      state.passiveAccum += gain;
+      const whole = Math.floor(state.passiveAccum);
+      if (whole > 0) {
+        state.passiveAccum -= whole;
+        state.bows += whole; state.totalBows += whole; state.allTimeBows += whole;
+        renderAll(); checkAchievements();
+      }
+    }
+  }, 50);
+
+  // ══════════════════════════════════════════════════
+  //  SAVE / LOAD  —  HMAC-SHA256 integrity protection
+  // ══════════════════════════════════════════════════
+  // The save file is: { data: <base64-encoded payload>, sig: <hex HMAC> }
+  // The payload is the actual game state JSON.
+  // The HMAC is computed over the payload string using a key derived
+  // from a combination of a hardcoded secret and structural game constants.
+  // If anyone edits the JSON the sig won't match and load is rejected.
+  //
+  // Security model: this is client-side, so a determined person could
+  // read this source and forge a sig. These measures stop casual hex-editing:
+  //   1. HMAC-SHA256 over the full payload — any byte change breaks it
+  //   2. Payload is base64 — not directly human-readable/editable
+  //   3. Logical sanity checks on load (bows can't exceed allTimeBows, etc.)
+  //   4. Upgrade counts capped at reasonable maximums
+  //   5. Gem stash counts capped per-gem
+  //   6. Unlocked chars must be a subset of known char ids
+
+  const SAVE_VERSION  = 2;
+  // Hardcoded signing secret — obfuscated as an array of char codes
+  const _SK = [70,101,109,98,111,121,67,108,105,99,107,101,114,95,83,101,99,114,101,116,95,118,50,95,100,111,110,116,95,116,111,117,99,104];
+  const SIGN_KEY = () => _SK.map(c => String.fromCharCode(c)).join('');
+
+  // ── Crypto helpers (WebCrypto, available in all modern browsers) ──────────
+  async function hmacSign(payload) {
+    const enc     = new TextEncoder();
+    const keyData = enc.encode(SIGN_KEY());
+    const cryptoKey = await crypto.subtle.importKey(
+      'raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+    const sig = await crypto.subtle.sign('HMAC', cryptoKey, enc.encode(payload));
+    return Array.from(new Uint8Array(sig)).map(b => b.toString(16).padStart(2,'0')).join('');
+  }
+
+  async function hmacVerify(payload, sig) {
+    const expected = await hmacSign(payload);
+    // Constant-time comparison to resist timing attacks
+    if (expected.length !== sig.length) return false;
+    let diff = 0;
+    for (let i = 0; i < expected.length; i++) diff |= expected.charCodeAt(i) ^ sig.charCodeAt(i);
+    return diff === 0;
+  }
+
+  function b64Encode(str) { return btoa(unescape(encodeURIComponent(str))); }
+  function b64Decode(str) { return decodeURIComponent(escape(atob(str))); }
+
+  // ── Build payload (what gets signed and saved) ────────────────────────────
+  function buildPayload() {
+    return JSON.stringify({
+      version:       SAVE_VERSION,
+      savedAt:       new Date().toISOString(),
+      bows:          Math.floor(state.bows),
+      totalBows:     Math.floor(state.totalBows),
+      allTimeBows:   Math.floor(state.allTimeBows),
+      prestige:      state.prestige,
+      prestigeMult:  state.prestigeMult,
+      totalClicks:   state.totalClicks,
+      maxCombo:      state.maxCombo,
+      gemsCollected: state.gemsCollected,
+      activeChar:    state.activeChar,
+      unlockedChars: state.unlockedChars,
+      unlockedAch:   state.unlockedAch,
+      owned:         state.owned,
+      gemSlots:      state.gemSlots.map(g => g ? g.id : null),
+      gemStash:      state.gemStash,
+      forgeSlotA:    state.forgeSlotA,
+      forgeSlotB:    state.forgeSlotB,
+    });
+  }
+
+  // ── Save ──────────────────────────────────────────────────────────────────
+  async function saveGame() {
+    try {
+      const payload = buildPayload();
+      const sig     = await hmacSign(payload);
+      const file    = JSON.stringify({ data: b64Encode(payload), sig }, null, 2);
+      const blob    = new Blob([file], { type: 'application/json' });
+      const url     = URL.createObjectURL(blob);
+      const a       = document.createElement('a');
+      a.href = url; a.download = 'femboy-clicker-save.json';
+      document.body.appendChild(a); a.click();
+      document.body.removeChild(a); URL.revokeObjectURL(url);
+      setSaveStatus('✦ saved — ' + new Date().toLocaleTimeString());
+    } catch(e) {
+      setSaveStatus('⚠ save failed: ' + e.message);
+    }
+  }
+
+  // ── Load ──────────────────────────────────────────────────────────────────
+  function loadGame(event) {
+    const file = event.target.files[0];
+    if (!file) return;
+    event.target.value = '';
+    const reader = new FileReader();
+    reader.onload = async e => {
+      try {
+        const outer = JSON.parse(e.target.result);
+        if (!outer || typeof outer !== 'object') throw new Error('Not a valid save file');
+
+        // ── v2 signed format ──
+        if (outer.data && outer.sig) {
+          let payload;
+          try { payload = b64Decode(outer.data); }
+          catch { throw new Error('Save file is corrupted (bad encoding)'); }
+
+          const valid = await hmacVerify(payload, outer.sig);
+          if (!valid) throw new Error('⚠ Integrity check failed — save has been tampered with');
+
+          const raw = JSON.parse(payload);
+          sanitizeAndApply(raw);
+          setSaveStatus('✦ loaded — ' + (raw.savedAt ? new Date(raw.savedAt).toLocaleString() : '?'));
+
+        // ── v1 legacy plain format (migrate + warn) ──
+        } else if (outer.version === 1 || outer.bows !== undefined) {
+          sanitizeAndApply(outer);
+          setSaveStatus('✦ legacy save loaded (will be secured on next save)');
+
+        } else {
+          throw new Error('Unrecognised save format');
+        }
+      } catch(err) {
+        setSaveStatus(err.message.startsWith('⚠') ? err.message : '⚠ Load failed: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ── Sanitise & apply ──────────────────────────────────────────────────────
+  function sanitizeAndApply(raw) {
+    const clamp   = (v, lo, hi) => Math.max(lo, Math.min(hi, Number(v) || 0));
+    const clampI  = (v, lo, hi) => Math.floor(clamp(v, lo, hi));
+    const KNOWN_CHARS = CHARS.map(c => c.id);
+    const KNOWN_GEMS  = GEM_TYPES.map(g => g.id);
+    const MAX_UPG_OWN = 9999;   // per upgrade — if someone got here legitimately, fine
+    const MAX_STASH   = 999;    // per gem type
+    const MAX_BOWS    = 1e15;   // 1 quadrillion — beyond any realistic play
+
+    // ── Numeric fields ────────────────────────────────────────────────────
+    const allTimeBows  = clamp(raw.allTimeBows,  0, MAX_BOWS);
+    const totalBows    = clamp(raw.totalBows,    0, allTimeBows);  // can't exceed all-time
+    const bows         = clamp(raw.bows,         0, allTimeBows);  // can't exceed all-time either
+    const prestige     = clampI(raw.prestige,    0, 1000);
+    const totalClicks  = clamp(raw.totalClicks,  0, 1e12);
+    const maxCombo     = clamp(raw.maxCombo,     1, 20);
+    const gemsCollected= clampI(raw.gemsCollected,0,99999);
+    const activeChar   = clampI(raw.activeChar,  0, CHARS.length - 1);
+
+    // ── Arrays ────────────────────────────────────────────────────────────
+    const unlockedChars = (Array.isArray(raw.unlockedChars) ? raw.unlockedChars : ['astolfo'])
+      .filter(id => KNOWN_CHARS.includes(id));
+    if (!unlockedChars.includes('astolfo')) unlockedChars.unshift('astolfo');
+
+    const knownAchIds = ACHIEVEMENTS.map(a => a.id);
+    const unlockedAch = (Array.isArray(raw.unlockedAch) ? raw.unlockedAch : [])
+      .filter(id => knownAchIds.includes(id));
+
+    // ── Owned upgrades ────────────────────────────────────────────────────
+    const owned = {};
+    CHARS.forEach(c => c.upgrades.forEach(u => {
+      const v = raw.owned && raw.owned[u.id] != null ? raw.owned[u.id] : 0;
+      owned[u.id] = clampI(v, 0, MAX_UPG_OWN);
+    }));
+
+    // ── Gem stash ─────────────────────────────────────────────────────────
+    const gemStash = {};
+    if (raw.gemStash && typeof raw.gemStash === 'object') {
+      KNOWN_GEMS.forEach(id => {
+        if (raw.gemStash[id]) gemStash[id] = clampI(raw.gemStash[id], 0, MAX_STASH);
+      });
+    }
+
+    // ── Gem slots ─────────────────────────────────────────────────────────
+    const rawSlots = Array.isArray(raw.gemSlots) ? raw.gemSlots : [null, null, null];
+    const gemSlotIds = rawSlots.slice(0,3).map(id =>
+      (id && KNOWN_GEMS.includes(id)) ? id : null);
+
+    // ── Forge slots ───────────────────────────────────────────────────────
+    const forgeSlotA = (raw.forgeSlotA && KNOWN_GEMS.includes(raw.forgeSlotA)) ? raw.forgeSlotA : null;
+    const forgeSlotB = (raw.forgeSlotB && KNOWN_GEMS.includes(raw.forgeSlotB)) ? raw.forgeSlotB : null;
+
+    // ── Apply to state ────────────────────────────────────────────────────
+    state.gemSlots.forEach(g => { if (g) applyGemEffect(g, false); });
+
+    state.bows          = bows;
+    state.totalBows     = totalBows;
+    state.allTimeBows   = allTimeBows;
+    state.prestige      = prestige;
+    state.prestigeMult  = 1 + prestige * 0.5;   // recomputed, not trusted from file
+    state.totalClicks   = totalClicks;
+    state.maxCombo      = maxCombo;
+    state.gemsCollected = gemsCollected;
+    state.activeChar    = activeChar;
+    state.unlockedChars = unlockedChars;
+    state.unlockedAch   = unlockedAch;
+    state.owned         = owned;
+    state.gemStash      = gemStash;
+    state.forgeSlotA    = forgeSlotA;
+    state.forgeSlotB    = forgeSlotB;
+
+    // Recompute click/passive from owned (never trust saved values)
+    state.clickPower    = 1;
+    state.passive       = 0;
+    state.bonusMaxCombo = 0;
+    CHARS.forEach(c => c.upgrades.forEach(u => {
+      const count = owned[u.id] || 0;
+      if (count > 0) {
+        if (u.type === 'click')   state.clickPower += u.val * count;
+        if (u.type === 'passive') state.passive     += u.val * count;
+      }
+    }));
+
+    // Rehydrate gem slots and re-apply effects
+    state.gemSlots = gemSlotIds.map(id => id ? GEM_TYPES.find(g => g.id === id) || null : null);
+    state.gemSlots.forEach(g => { if (g) applyGemEffect(g, true); });
+
+    // Reset transient
+    state.combo = 1; state.passiveAccum = 0;
+    state.pendingGem = null; state.pendingStashSocket = null; state.forgePicking = null;
+    clearInterval(gmDropTimerInterval);
+
+    // Re-render
+    const c = CHARS[state.activeChar] || CHARS[0];
+    document.getElementById('click-img').src = c.img;
+    document.getElementById('side-char-img').src = c.img;
+    document.getElementById('side-char-label').textContent = c.name;
+    document.getElementById('char-name-display').textContent = c.name;
+    document.body.setAttribute('data-char', c.id);
+    document.querySelectorAll('.char-card').forEach((el, i) =>
+      el.classList.toggle('active', i === state.activeChar));
+    document.getElementById('upg-list').dataset.charId = '';
+    document.getElementById('ach-list').innerHTML = '';
+    closeGemManager();
+    renderAll(); renderAchievements(); renderGemSlots();
+    renderForgeInventory(); updateForgeSlotDisplay(); updateForgeRecipeHint();
+    checkAchievements();
+    addLog('<span>Save loaded!</span>');
+  }
+
+  // ── Status toast (separate from main toast, bottom-left) ─────────────────
+  let saveStatusTimer;
+  function setSaveStatus(msg) {
+    const el = document.getElementById('save-status');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    clearTimeout(saveStatusTimer);
+    saveStatusTimer = setTimeout(() => el.classList.remove('show'), 3500);
+  }
+
+  // ══════════════════════════════
+  //  INIT
+  // ══════════════════════════════
+  addLog('Game started. Click to collect bows!');
+  addLog('<span>v4 — Shun unlocked, Save/Load added!</span>');
+  renderAll();
+  renderAchievements();
+  renderGemSlots();
+  renderForgeInventory();
+  updateForgeSlotDisplay();
+  updateForgeRecipeHint();
+</script>
+</body>
+</html>
